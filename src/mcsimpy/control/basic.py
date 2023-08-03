@@ -19,6 +19,7 @@ from mcsimpy.utils import Rz, pipi
 
 class PD:
     """Proportional-Derivative controller."""
+
     def __init__(self, kp: list, kd: list):
         self.Kp = np.diag(kp)
         self.Kd = np.diag(kd)
@@ -44,10 +45,10 @@ class PD:
             Controller load in surge, sway, and yaw (body-frame).
         """
         psi = eta[-1]
-        z1 = Rz(psi).T@(eta-eta_d)
+        z1 = Rz(psi).T @ (eta - eta_d)
         z1[2] = pipi(eta[2] - eta_d[2])
         z2 = nu - nu_d
-        return -self.Kp@z1 - self.Kd@z2
+        return -self.Kp @ z1 - self.Kd @ z2
 
     def set_kd(self, kd: list):
         """Set the derivative gain coefficients."""
@@ -56,6 +57,7 @@ class PD:
     def set_kp(self, kp: list):
         """Set the proportional gain coefficients."""
         self.Kp = np.diag(kp)
+
 
 class PID:
     """Proportional-Derivative control with integral action."""
@@ -66,7 +68,6 @@ class PID:
         self.Ki = np.diag(ki)
         self.zi = np.zeros(3)
         self.dt = dt
-
 
     def get_tau(self, eta, eta_d, nu, nu_d):
         """Calculate control loads.
@@ -88,14 +89,14 @@ class PID:
             Controller load in surge, sway, and yaw (body-frame).
         """
         psi = eta[-1]
-        z1 = Rz(psi).T@(eta - eta_d)
+        z1 = Rz(psi).T @ (eta - eta_d)
         z1[2] = pipi(eta[2] - eta_d[2])
         z2 = nu - nu_d
 
-        self.zi[:2] += self.dt*(eta[:2] - eta_d[:2])
-        self.zi[2] += self.dt*pipi(eta[2] - eta_d[2])
+        self.zi[:2] += self.dt * (eta[:2] - eta_d[:2])
+        self.zi[2] += self.dt * pipi(eta[2] - eta_d[2])
 
-        return -self.Kp@z1 - self.Kd@z2 - Rz(psi).T@self.Ki@self.zi
+        return -self.Kp @ z1 - self.Kd @ z2 - Rz(psi).T @ self.Ki @ self.zi
 
 
 class PI:
@@ -127,24 +128,24 @@ class PI:
         eta_tilde = eta - eta_d
         eta_tilde[-1] = pipi(eta_tilde[-1])
 
-        z1 = Rz(psi).T@eta_tilde
+        z1 = Rz(psi).T @ eta_tilde
 
-        self.zi += self.dt*(eta_tilde)
+        self.zi += self.dt * (eta_tilde)
 
-        return -self.Kp@z1 - Rz(psi).T@self.Ki@self.zi
+        return -self.Kp @ z1 - Rz(psi).T @ self.Ki @ self.zi
 
 
-class DirectBiasCompensationController():
-    '''
+class DirectBiasCompensationController:
+    """
     Bias estimate provided from the observer as direct compensation in a nominal PD control law.
-    '''
-    def __init__(self, kp: list, kd: list):
+    """
 
+    def __init__(self, kp: list, kd: list):
         self.Kp = np.diag(kp)
         self.Kd = np.diag(kd)
 
     def get_tau(self, eta, eta_d, nu, nu_d, b):
-        '''
+        """
         Parameters
         ----------
         eta : array_like
@@ -162,13 +163,13 @@ class DirectBiasCompensationController():
         ----
         The bias term `b` is defined in body-frame.
 
-        '''
+        """
         psi = eta[-1]
-        z1 = Rz(psi).T@(eta-eta_d)              # P
+        z1 = Rz(psi).T @ (eta - eta_d)  # P
         z1[2] = pipi(eta[2] - eta_d[2])
-        z2 = nu - nu_d                          # D
-        zb = Rz(psi).T@b                        # bias in body
-        return -self.Kp@z1 - self.Kd@z2 - zb
+        z2 = nu - nu_d  # D
+        zb = Rz(psi).T @ b  # bias in body
+        return -self.Kp @ z1 - self.Kd @ z2 - zb
 
     def set_kd(self, kd: list):
         self.Kd = np.diag(kd)

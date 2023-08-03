@@ -3,17 +3,17 @@ import numpy as np
 from mcsimpy.utils import Rz, six2threeDOF, three2sixDOF, pipi, Smat
 
 
-
-class AdaptiveFSController():
-    '''
+class AdaptiveFSController:
+    """
     Adaptive controller using a truncated Fourier series-based internal disturbance model in a "Model Reference Adaptive Control" (MRAC).
     The control law is determined by using LgV-backstepping, based on calculations and procedures done in (Fossen, 2021) and (Brørby, 2022).
 
     To be implemented:
         - Improved tuning.
-    '''
+    """
+
     def __init__(self, dt, M, D, N=15):
-        '''Initialize
+        """Initialize
 
         Parameters
         ------------
@@ -25,28 +25,26 @@ class AdaptiveFSController():
             Full damping matrix (6x6) of vessel
         N : int
             Number of wave frequency components. Set to 15 as default
-        '''
+        """
         self._dt = dt
         self._M = six2threeDOF(M)
         self._D = six2threeDOF(D)
 
-        self.theta_hat = np.zeros((2*N + 1)*3)
+        self.theta_hat = np.zeros((2 * N + 1) * 3)
 
         # Frequencies to be used in disturbance model
-        w_min = 2*np.pi/20                          # Lower bound
-        w_max = 2*np.pi/2                           # Upper bound
+        w_min = 2 * np.pi / 20  # Lower bound
+        w_max = 2 * np.pi / 2  # Upper bound
         self.set_freqs(w_min, w_max, N)
 
         # Tuning:
-        self._K1 = np.diag([.1, 1., .0001])*1e-11
-        self._K2 = np.diag([.1, 1., .0001])*1e-11
-        self._gamma = np.eye((2*self._N +1)*3) * 1e-15
-        self._kappa = 1                             # Must be positive
-
-
+        self._K1 = np.diag([0.1, 1.0, 0.0001]) * 1e-11
+        self._K2 = np.diag([0.1, 1.0, 0.0001]) * 1e-11
+        self._gamma = np.eye((2 * self._N + 1) * 3) * 1e-15
+        self._kappa = 1  # Must be positive
 
     def get_tau(self, eta, eta_d, nu, eta_d_dot, eta_d_ddot, t, calculate_bias=False):
-        '''Calculate controller output based on the adaptive update law.
+        """Calculate controller output based on the adaptive update law.
 
         Parameters
         -----------
@@ -70,55 +68,67 @@ class AdaptiveFSController():
             - tau (3DOF): Calculated control forces
             - b_hat (3DOF): Estimated bias in surge, sway, yaw. Only returned if "calculate_bias == True"
 
-        '''
-        R = Rz(eta[-1])                                 # Rotation matrix
-        S = Smat(np.array([0,0,nu[-1]]))                # Skew-symmetric matrix
+        """
+        R = Rz(eta[-1])  # Rotation matrix
+        S = Smat(np.array([0, 0, nu[-1]]))  # Skew-symmetric matrix
 
         # Use get_regressor() to calculate Phi
         regressor_transpose = self.get_regressor(t)
         zeros = np.zeros(len(regressor_transpose))
 
-        Phi_transpose = np.block([[regressor_transpose, zeros, zeros],
-                                  [zeros, regressor_transpose, zeros],
-                                  [zeros, zeros, regressor_transpose]])
+        Phi_transpose = np.block(
+            [
+                [regressor_transpose, zeros, zeros],
+                [zeros, regressor_transpose, zeros],
+                [zeros, zeros, regressor_transpose],
+            ]
+        )
 
         Phi = Phi_transpose.T
 
         # Introduce the first new state, which shall converge towards zero
-        z1 = R.T@(eta-eta_d)
+        z1 = R.T @ (eta - eta_d)
         z1[-1] = pipi(z1[-1])
 
         # Virtual input function
-        alpha0 = -self._kappa*np.eye(3)@z1
-        alpha = -self._K1@z1 + R.T@eta_d_dot + alpha0
+        alpha0 = -self._kappa * np.eye(3) @ z1
+        alpha = -self._K1 @ z1 + R.T @ eta_d_dot + alpha0
 
         # The second introduced state, functioning as a virtual input to the first control system
         z2 = nu - alpha
 
         # Differentiate
-        z1_dot = -S@z1 + z2 -(self._K1 + self._kappa*np.eye(3))@z1
-        alpha_dot = -(self._K1 + self._kappa*np.eye(3))@z1_dot - S@R.T@eta_d_dot + R.T@eta_d_ddot
+        z1_dot = -S @ z1 + z2 - (self._K1 + self._kappa * np.eye(3)) @ z1
+        alpha_dot = (
+            -(self._K1 + self._kappa * np.eye(3)) @ z1_dot
+            - S @ R.T @ eta_d_dot
+            + R.T @ eta_d_ddot
+        )
 
         # Adaptive update law
-        theta_hat_dot = self._gamma@Phi@z2
-        self.theta_hat  += (theta_hat_dot * self._dt)
+        theta_hat_dot = self._gamma @ Phi @ z2
+        self.theta_hat += theta_hat_dot * self._dt
 
         # Control law
-        tau = -self._K2@z2 + self._D@alpha + self._M@alpha_dot - Phi.T@self.theta_hat
-
+        tau = (
+            -self._K2 @ z2
+            + self._D @ alpha
+            + self._M @ alpha_dot
+            - Phi.T @ self.theta_hat
+        )
 
         # Calculate bias
         if calculate_bias:
-            b_hat = Phi.T@self.theta_hat
-            tau_z2 = -self._K2@z2
-            tau_alpha = self._D@alpha
-            tau_alpha_dot = self._M@alpha_dot
+            b_hat = Phi.T @ self.theta_hat
+            tau_z2 = -self._K2 @ z2
+            tau_alpha = self._D @ alpha
+            tau_alpha_dot = self._M @ alpha_dot
             return tau, b_hat, tau_z2, tau_alpha, tau_alpha_dot
 
         return tau
 
     def get_regressor(self, t):
-        '''Extract a (2*N+1)-dimensional regressor defined as [1   cos(w1*t)   sin(w1*t)   cos(w2*t)   ...   sin(wN*t)].
+        """Extract a (2*N+1)-dimensional regressor defined as [1   cos(w1*t)   sin(w1*t)   cos(w2*t)   ...   sin(wN*t)].
         Used in get_tau() to calculate control forces.
 
         Parameters
@@ -130,17 +140,16 @@ class AdaptiveFSController():
         ----------
         regressor : array_like
             (2N + 1) dimensional, time-dependent vector as defined above
-        '''
-        regressor = np.zeros(2*self._N + 1)
+        """
+        regressor = np.zeros(2 * self._N + 1)
         regressor[0] = 1
         for i in range(self._N):
-            regressor[2*i + 1] = np.cos(self._freqs[i]*t)
-            regressor[2*i + 2] = np.sin(self._freqs[i]*t)
+            regressor[2 * i + 1] = np.cos(self._freqs[i] * t)
+            regressor[2 * i + 2] = np.sin(self._freqs[i] * t)
         return regressor
 
-
     def set_freqs(self, w_min, w_max, N):
-        '''Customize the number and magnitude of wave frequencies to be included in the internal disturbance model.
+        """Customize the number and magnitude of wave frequencies to be included in the internal disturbance model.
 
         UNIT IN RAD/S OR HZ?
 
@@ -152,10 +161,10 @@ class AdaptiveFSController():
             Upper bound frequency
         N : int
             Number of components
-        '''
+        """
         self._N = N
         try:
-            dw = (w_max-w_min)/ self._N
+            dw = (w_max - w_min) / self._N
             self._freqs = np.arange(w_min, w_max, dw)
         except ZeroDivisionError:
             self._freqs = np.array([])
@@ -163,11 +172,10 @@ class AdaptiveFSController():
     def set_tuning_params(self, K1: list, K2: list, gamma: list):
         self._K1 = np.diag(K1)
         self._K2 = np.diag(K2)
-        #self._gamma = np.eye((2*self._N +1)*3) * gamma
-        if len(gamma) != (2*self._N +1)*3:
+        # self._gamma = np.eye((2*self._N +1)*3) * gamma
+        if len(gamma) != (2 * self._N + 1) * 3:
             raise ValueError
         self._gamma = np.diag(gamma)
-
 
     def get_theta(self):
         return self.theta_hat

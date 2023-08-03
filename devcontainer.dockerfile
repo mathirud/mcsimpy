@@ -21,6 +21,7 @@ RUN adduser --disabled-password --gecos '' developer ;\
     adduser developer sudo ;\
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# Set environment variables to seamlessly work with python
 ENV PATH="${PATH}:/home/developer/.local/bin"
 ENV PYTHONPATH="${PYTHONPATH}:/com.docker.devenvironments.code/src"
 

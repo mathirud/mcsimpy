@@ -32,8 +32,7 @@ class BaseSpectrum(ABC):
         self._freq_hz = freq_hz
 
         if self._freq_hz:
-            self._freq *= 2*np.pi
-
+            self._freq *= 2 * np.pi
 
     def __call__(self, *args, freq_hz=None, **kwargs):
         freq = self._freq.copy()
@@ -45,7 +44,6 @@ class BaseSpectrum(ABC):
         """Calculate n-th spectral moment."""
         freq, spec = self.__call__(*args, **kwargs)
         return np.trapz(freq**n * spec, freq)
-
 
     def realization(self, time, *args, **kwargs):
         """Generate a wave realization from wave spectrum at a fixed position.
@@ -66,11 +64,10 @@ class BaseSpectrum(ABC):
         """
 
         freq, spectrum = self.__call__(*args, **kwargs)
-        dw = freq[1]-freq[0]
-        amp = np.sqrt(2*spectrum*dw)
-        eps = np.random.uniform(0, 2*np.pi, size=len(amp))
-        return np.sum(amp * np.cos(freq*time[:, None] + eps), axis=1)
-
+        dw = freq[1] - freq[0]
+        amp = np.sqrt(2 * spectrum * dw)
+        eps = np.random.uniform(0, 2 * np.pi, size=len(amp))
+        return np.sum(amp * np.cos(freq * time[:, None] + eps), axis=1)
 
     @abstractclassmethod
     def _spectrum(self, omega, *args, **kwargs):
@@ -78,16 +75,14 @@ class BaseSpectrum(ABC):
 
 
 class BasePMSpectrum(BaseSpectrum):
-
     def __call__(self, A, B, freq_hz=None):
         return super().__call__(A, B, freq_hz=freq_hz)
 
     def _spectrum(self, omega, A, B):
-        return A/omega**5 * np.exp(-B/omega**4)
+        return A / omega**5 * np.exp(-B / omega**4)
 
 
 class ModifiedPiersonMoskowitz(BasePMSpectrum):
-
     def __call__(self, hs, tp, freq_hz=None):
         """Generate a Modified Pierson-Moskowitz wave spectrum.
 
@@ -114,16 +109,15 @@ class ModifiedPiersonMoskowitz(BasePMSpectrum):
         return super().__call__(A, B, freq_hz=freq_hz)
 
     def _A(self, hs, tp):
-        wp = 2*np.pi / tp
-        return (5.0/16.0) * hs**2 * wp**4
+        wp = 2 * np.pi / tp
+        return (5.0 / 16.0) * hs**2 * wp**4
 
     def _B(self, tp):
-        wp = 2*np.pi / tp
-        return (5.0/4.0) * wp**4
+        wp = 2 * np.pi / tp
+        return (5.0 / 4.0) * wp**4
 
 
 class JONSWAP(ModifiedPiersonMoskowitz):
-
     def __call__(self, hs, tp, gamma=1, freq_hz=None):
         """Generate a JONSWAP wave spectrum.
 
@@ -157,9 +151,9 @@ class JONSWAP(ModifiedPiersonMoskowitz):
         return 1 - 0.287 * np.log(gamma)
 
     def _b(self, tp):
-        wp = 2*np.pi / tp
+        wp = 2 * np.pi / tp
         sigma = self._sigma(wp)
-        return np.exp(-0.5 * ((self._freq - wp) / (sigma*wp))**2)
+        return np.exp(-0.5 * ((self._freq - wp) / (sigma * wp)) ** 2)
 
     def _sigma(self, wp):
         # Set conditional parameter sigma used in JONSWAP spectrum.
@@ -170,8 +164,7 @@ class JONSWAP(ModifiedPiersonMoskowitz):
         return sigma
 
 
-
-class DirectionalSpectrum():
+class DirectionalSpectrum:
 
     """
     Directional Wave Spectrum class.
@@ -210,13 +203,12 @@ class DirectionalSpectrum():
         self._spectrum = spectrum
         self._theta_p = theta_p
         self._spreading = self._spread_func(s=s)
-        self._dw = (freqs[-1] - freqs[0])/len(freqs)
-        self._dtheta = (angles[-1] - angles[0])/len(angles)
+        self._dw = (freqs[-1] - freqs[0]) / len(freqs)
+        self._dtheta = (angles[-1] - angles[0]) / len(angles)
         self._g = 9.81
         self._seed = seed
         np.random.seed(seed)
-        self._eps = np.random.uniform(0, 2*np.pi, size=(len(freqs), len(angles)))
-
+        self._eps = np.random.uniform(0, 2 * np.pi, size=(len(freqs), len(angles)))
 
     def _spread_func(self, s=1):
         """
@@ -237,8 +229,14 @@ class DirectionalSpectrum():
             Spreading function for the given angles, peak angles and steapness value.
         """
         d_theta = self._angles - self._theta_p
-        state = np.abs(d_theta) < np.pi/2
-        spreading = 2**(2*s - 1) * np.math.factorial(s)*np.math.factorial(s-1)/(np.pi*np.math.factorial(2*s-1)) * np.cos(d_theta)**(2*s)
+        state = np.abs(d_theta) < np.pi / 2
+        spreading = (
+            2 ** (2 * s - 1)
+            * np.math.factorial(s)
+            * np.math.factorial(s - 1)
+            / (np.pi * np.math.factorial(2 * s - 1))
+            * np.cos(d_theta) ** (2 * s)
+        )
         spreading[~state] = 0
         return spreading
 
@@ -257,7 +255,7 @@ class DirectionalSpectrum():
         """
 
         F, T = np.meshgrid(self._freq, self._angles)
-        spec2d = self._spectrum*self._spreading[:, None]
+        spec2d = self._spectrum * self._spreading[:, None]
         self._spectrum2d = spec2d
         return F, T, spec2d
 
@@ -284,46 +282,51 @@ class DirectionalSpectrum():
             Wave elevation at position (x, y) at time t.
         """
 
-        X, Y = np.meshgrid(x, y) # Create meshgrid
+        X, Y = np.meshgrid(x, y)  # Create meshgrid
         wave_elevation = 0
 
         for j in range(len(self._freq)):
-            k_j = self._freq[j]**2 / self._g
+            k_j = self._freq[j] ** 2 / self._g
             for k in range(len(self._angles)):
                 theta = self._angles[k]
                 # eps_jk = np.random.uniform(0, 2*np.pi)
-                amplitude = np.sqrt(2*self._spectrum2d[k, j] * self._dw * self._dtheta)
-                wave_elevation += amplitude*np.sin(self._freq[j]*time - k_j*X*np.cos(theta) - k_j*Y*np.sin(theta) + self._eps[j, k])
+                amplitude = np.sqrt(
+                    2 * self._spectrum2d[k, j] * self._dw * self._dtheta
+                )
+                wave_elevation += amplitude * np.sin(
+                    self._freq[j] * time
+                    - k_j * X * np.cos(theta)
+                    - k_j * Y * np.sin(theta)
+                    + self._eps[j, k]
+                )
 
         return X, Y, wave_elevation
-
-
 
 
 if __name__ == "__main__":
     # Simple How-To for wave module
     import doctest
+
     doctest.testmod()
     import matplotlib.pyplot as plt
     from matplotlib import cm
-    plt.rcParams.update({
-        'figure.figsize': (12, 4),
-        'font.size': 14,
-        'lines.linewidth': 1.4
-    })
+
+    plt.rcParams.update(
+        {"figure.figsize": (12, 4), "font.size": 14, "lines.linewidth": 1.4}
+    )
 
     hs = 2.0
     tp = 9.5
-    wp = 2*np.pi / tp
+    wp = 2 * np.pi / tp
     gamma = 5
 
-    wmin = wp - wp/2
-    wmax = 2*wp
+    wmin = wp - wp / 2
+    wmax = 2 * wp
     N = 20
     w = np.linspace(wmin, wmax, N)
 
-    pm_spectrum = ModifiedPiersonMoskowitz(w)       # Instantiate MPM spectrum object
-    jonswap_spectrum = JONSWAP(w)                   # Instantiate Jonwswap spectrum object
+    pm_spectrum = ModifiedPiersonMoskowitz(w)  # Instantiate MPM spectrum object
+    jonswap_spectrum = JONSWAP(w)  # Instantiate Jonwswap spectrum object
 
     # Calculate the zero-moment for both spectra.
     m0_jonswap = jonswap_spectrum.moment(n=0, hs=hs, tp=tp, gamma=gamma)
@@ -351,14 +354,14 @@ if __name__ == "__main__":
     # plt.ylim(-6*np.sqrt(m0_jonswap), 6*np.sqrt(m0_jonswap))
     # plt.show()
 
-    theta0 = np.pi/36
-    s=2
+    theta0 = np.pi / 36
+    s = 2
     psi = np.linspace(-np.pi, np.pi, 15)
     dir_spectra = DirectionalSpectrum(w, psi, theta_p=theta0, spectrum=spectrum, s=s)
     F, T, spectrum2d = dir_spectra.spectrum2d()
 
     fig = plt.figure(figsize=(16, 8))
-    ax = plt.axes(projection='3d')
+    ax = plt.axes(projection="3d")
     ax.view_init(35, 40)
     ax.plot_surface(F, T, spectrum2d, cmap=cm.coolwarm)
     ax.set_xlabel(r"$\omega \; [\frac{rad}{s}]$")
@@ -380,7 +383,7 @@ if __name__ == "__main__":
     ax = fig.add_subplot(111, projection="3d")
     ax.view_init(30, 40)
     # ax.plot_surface(X, Y, realization_2d, cmap=cm.coolwarm)
-    ax.set_zlim([-2*hs, 2*hs])
+    ax.set_zlim([-2 * hs, 2 * hs])
     ax.set_xlabel("$x \, [m]$")
     ax.set_ylabel("$y \, [m]$")
     ax.set_zlabel("$\zeta \, [m]$")
@@ -395,8 +398,21 @@ if __name__ == "__main__":
 
     duration = 20
     t_start = datetime.now()
-    w_anim = FuncAnimation(fig, update3d, frames=np.linspace(0, duration, (duration*fps)), fargs=(plot, x, y,))
-    w_anim.save(f'wave_realization_disc{Nxy}_hs{hs:.2f}_tp{tp:.2f}_dir{np.rad2deg(theta0):.0f}_s{s:.0f}_{duration}_gamma{gamma:.1f}_sec.mp4', fps=fps, dpi=50)
+    w_anim = FuncAnimation(
+        fig,
+        update3d,
+        frames=np.linspace(0, duration, (duration * fps)),
+        fargs=(
+            plot,
+            x,
+            y,
+        ),
+    )
+    w_anim.save(
+        f"wave_realization_disc{Nxy}_hs{hs:.2f}_tp{tp:.2f}_dir{np.rad2deg(theta0):.0f}_s{s:.0f}_{duration}_gamma{gamma:.1f}_sec.mp4",
+        fps=fps,
+        dpi=50,
+    )
     t_end = datetime.now()
 
     print(f"Execution time : {(t_end - t_start).total_seconds()} [s].")

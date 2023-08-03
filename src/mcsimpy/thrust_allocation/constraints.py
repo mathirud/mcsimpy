@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 import math
 from abc import ABC, abstractmethod
 import numpy as np
+
 
 class Constraint(ABC):
     """
@@ -9,7 +12,6 @@ class Constraint(ABC):
     """
 
     def __init__(self):
-
         self._C, self._b, self._n = self._linearized_constraint()
 
     @abstractmethod

@@ -27,7 +27,9 @@ Models:
 - 6DOF DP Model
 """
 
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, 'vessel_data', 'CSAD'))
+DATA_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, "vessel_data", "CSAD")
+)
 
 
 class CSADMan3DOF(Vessel):
@@ -50,19 +52,20 @@ class CSADMan3DOF(Vessel):
         Viscous damping
     """
 
-    def __init__(self, dt, *args, method="Euler", dof=3, config_file="vessel_json.json", **kwargs):
+    def __init__(
+        self, dt, *args, method="Euler", dof=3, config_file="vessel_json.json", **kwargs
+    ):
         config_file = os.path.join(DATA_DIR, config_file)
         super().__init__(dt, method=method, config_file=config_file, dof=dof)
         ind_3dof = np.ix_([0, 1, 5], [0, 1, 5])
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             data = json.load(f)
-        self._Mrb = np.asarray(data['MRB'])[ind_3dof]
-        self._Ma = np.asarray(data['A'])[:, :, -1][ind_3dof]
+        self._Mrb = np.asarray(data["MRB"])[ind_3dof]
+        self._Ma = np.asarray(data["A"])[:, :, -1][ind_3dof]
         self._M = self._Mrb + self._Ma
         self._Minv = np.linalg.inv(self._M)
-        self._D = np.asarray(data['B'])[:, :, -1][ind_3dof]
-        self._Bv = np.asarray(data['Bv'])[ind_3dof]
-
+        self._D = np.asarray(data["B"])[:, :, -1][ind_3dof]
+        self._Bv = np.asarray(data["Bv"])[ind_3dof]
 
     def x_dot(self, x, Uc, betac, tau):
         """Kinematic and kinetic equation for 6DOF simulation model.
@@ -83,17 +86,20 @@ class CSADMan3DOF(Vessel):
         x_dot : array_like
             The derivative of the state vector.
         """
-        eta = x[:self._dof]
-        nu = x[self._dof:]
-        nu_cn = Uc*np.array([np.cos(betac), np.sin(betac), 0])
-        nu_c = Rz(eta[2]).T@nu_cn
+        eta = x[: self._dof]
+        nu = x[self._dof :]
+        nu_cn = Uc * np.array([np.cos(betac), np.sin(betac), 0])
+        nu_c = Rz(eta[2]).T @ nu_cn
         nu_r = nu - nu_c
-        dnu_c = -Smat(nu)@nu_c
+        dnu_c = -Smat(nu) @ nu_c
 
-        eta_dot = Rz(eta[2])@nu
-        nu_dot = self._Minv@(tau - self._Bv@nu_r - self._D@nu_r + self._Ma@dnu_c)
+        eta_dot = Rz(eta[2]) @ nu
+        nu_dot = self._Minv @ (
+            tau - self._Bv @ nu_r - self._D @ nu_r + self._Ma @ dnu_c
+        )
         # self._x_dot = np.concatenate([eta_dot, nu_dot])
         return np.concatenate([eta_dot, nu_dot])
+
 
 class CSAD_DP_6DOF(Vessel):
     """6 DOF DP simulator model for CSAD.
@@ -104,23 +110,25 @@ class CSAD_DP_6DOF(Vessel):
     No fluid memory effects are included yet.
     """
 
-    def __init__(self, dt, *args, method="Euler", config_file="vessel_json.json", dof=6, **kwargs):
+    def __init__(
+        self, dt, *args, method="Euler", config_file="vessel_json.json", dof=6, **kwargs
+    ):
         config_file = os.path.join(DATA_DIR, config_file)
         super().__init__(dt, config_file=config_file, method=method, dof=6)
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             data = json.load(f)
 
-        self._Mrb = np.asarray(data['MRB'])         # Rigid body mass matrix
-        self._Ma = np.asarray(data['A'])[:, :, 41]  # Added mass matrix
-        self._M = self._Mrb + self._Ma              # Total mass matrix
-        self._Minv = np.linalg.inv(self._M)         # Inverse mass matrix
+        self._Mrb = np.asarray(data["MRB"])  # Rigid body mass matrix
+        self._Ma = np.asarray(data["A"])[:, :, 41]  # Added mass matrix
+        self._M = self._Mrb + self._Ma  # Total mass matrix
+        self._Minv = np.linalg.inv(self._M)  # Inverse mass matrix
 
-        self._Dp = np.asarray(data['B'])[:, :, 41]  # Potential damping
-        self._Dv = np.asarray(data['Bv'])           # Viscous damping
-        self._D = self._Dp + self._Dv               # Total damping
-        self._D[3, 3] *= 2                          # Increase roll damping
+        self._Dp = np.asarray(data["B"])[:, :, 41]  # Potential damping
+        self._Dv = np.asarray(data["Bv"])  # Viscous damping
+        self._D = self._Dp + self._Dv  # Total damping
+        self._D[3, 3] *= 2  # Increase roll damping
 
-        self._G = np.asarray(data['C'])[:, :, 0]    # Restoring coefficients
+        self._G = np.asarray(data["C"])[:, :, 0]  # Restoring coefficients
 
     def x_dot(self, x, Uc, betac, tau):
         """Kinematic and kinetic equation for 6DOF simulation model.
@@ -141,19 +149,21 @@ class CSAD_DP_6DOF(Vessel):
         x_dot : array_like
             The derivative of the state vector.
         """
-        eta = x[:self._dof]
-        nu = x[self._dof:]
+        eta = x[: self._dof]
+        nu = x[self._dof :]
 
-        nu_cn = Uc*np.array([np.cos(betac), np.sin(betac), 0])
+        nu_cn = Uc * np.array([np.cos(betac), np.sin(betac), 0])
         # nu_cn = np.concatenate([nu_cn, np.zeros(4)])
         Jinv = np.linalg.inv(J(eta))
-        nu_c = Rz(eta[-1]).T@nu_cn
+        nu_c = Rz(eta[-1]).T @ nu_cn
         nu_c = np.insert(nu_c, [3, 3, 3], 0)
         nu_r = nu - nu_c
-        eta_dot = J(eta)@nu
+        eta_dot = J(eta) @ nu
 
-        nu_dot = self._Minv@(tau - self._D@nu_r - self._G@eta) #- self._G@Jinv@eta)
-        #self._x_dot = np.concatenate([eta_dot, nu_dot])
+        nu_dot = self._Minv @ (
+            tau - self._D @ nu_r - self._G @ eta
+        )  # - self._G@Jinv@eta)
+        # self._x_dot = np.concatenate([eta_dot, nu_dot])
         return np.concatenate([eta_dot, nu_dot])
 
     def set_hydrod_parameters(self, freq):
@@ -186,37 +196,44 @@ class CSAD_DP_6DOF(Vessel):
         freq = np.asarray(freq)
         print(freq.shape)
         if (freq.shape[0] > 1) and (freq.shape[0] != self._dof):
-            raise ValueError(f"Argument freq: {freq} must either be a float or have shape n = {self._dof}. \
-                             freq.shape = {freq.shape} != {self._dof}.")
-        with open(self._config_file, 'r') as f:
+            raise ValueError(
+                f"Argument freq: {freq} must either be a float or have shape n = {self._dof}. \
+                             freq.shape = {freq.shape} != {self._dof}."
+            )
+        with open(self._config_file, "r") as f:
             param = json.load(f)
 
-        freqs = np.asarray(param['freqs'])
+        freqs = np.asarray(param["freqs"])
         if freq.shape[0] == 1:
             freq_indx = np.argmin(np.abs(freqs - freq))
         else:
             freq_indx = np.argmin(np.abs(freqs - freq[:, None]), axis=1)
         all_dof = np.arange(6)
-        self._Ma = np.asarray(param['A'])[:, all_dof, freq_indx]
-        self._Dp = np.asarray(param['B'])[:, all_dof, freq_indx]
+        self._Ma = np.asarray(param["A"])[:, all_dof, freq_indx]
+        self._Dp = np.asarray(param["B"])[:, all_dof, freq_indx]
         self._M = self._Mrb + self._Ma
         self._Minv = np.linalg.inv(self._M)
         self._D = self._Dv + self._Dp
 
 
 class CSAD_DP_Seakeeping(Vessel):
-
-    def __init__(self, dt, method="RK4", config_file='vessel_json.json', vessel_abc='vesselABC_json.json'):
+    def __init__(
+        self,
+        dt,
+        method="RK4",
+        config_file="vessel_json.json",
+        vessel_abc="vesselABC_json.json",
+    ):
         config_file = os.path.join(DATA_DIR, config_file)
         config_abc_file = os.path.join(DATA_DIR, vessel_abc)
         super().__init__(dt, config_file=config_file, method=method, dof=6)
-        with open(config_abc_file, 'r') as f:
+        with open(config_abc_file, "r") as f:
             vesselABC = json.load(f)
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             vessel_data = json.load(f)
 
-        self.Mrb = np.asarray(vesselABC['MRB'])
-        self.Ma = np.asarray(vesselABC['MA'])
+        self.Mrb = np.asarray(vesselABC["MRB"])
+        self.Ma = np.asarray(vesselABC["MA"])
         # Check if altering the different added mass term can better improve response
         # self.Ma[2, 2] = 235.0
         # self.Ma[2, 4] = 18.0
@@ -225,22 +242,22 @@ class CSAD_DP_Seakeeping(Vessel):
         # self.Ma[3, 1] = self.Ma[3, 1]
 
         self.Minv = np.linalg.inv(self.Ma + self.Mrb)
-        self.D = np.asarray(vessel_data['Bv'])
+        self.D = np.asarray(vessel_data["Bv"])
         # self.D[3,3] = 0.0
-        self.G = np.asarray(vesselABC['G'])
+        self.G = np.asarray(vesselABC["G"])
 
     def x_dot(self, x, Uc, betac, tau):
-        eta = x[:self._dof]
-        nu = x[self._dof:]
+        eta = x[: self._dof]
+        nu = x[self._dof :]
 
-        nu_cn = Uc*np.array([np.cos(betac), np.sin(betac), 0])
+        nu_cn = Uc * np.array([np.cos(betac), np.sin(betac), 0])
 
-        nu_c = Rz(eta[-1]).T@nu_cn
+        nu_c = Rz(eta[-1]).T @ nu_cn
         nu_c = np.insert(nu_c, [3, 3, 3], 0)
         nu_r = nu - nu_c
-        eta_dot = J(eta)@nu
+        eta_dot = J(eta) @ nu
 
-        nu_dot = self.Minv@(tau - self.D@nu_r - self.G@eta)
+        nu_dot = self.Minv @ (tau - self.D @ nu_r - self.G @ eta)
         return np.concatenate([eta_dot, nu_dot])
 
 
@@ -262,7 +279,6 @@ class CSAD_DP_Seakeeping(Vessel):
 #         self._D = self._Dp + self._Dv
 
 #         self._G = np.asarray(vessel['C'])[:, :, 0]
-
 
 
 # class CSAD6DOF(Vessel):

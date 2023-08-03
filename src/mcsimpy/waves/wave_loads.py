@@ -62,20 +62,22 @@ class WaveLoad:
 
     QTF_METHODS = ["Newman", "geo-mean"]
 
-    def __init__(self,
-                wave_amps,
-                freqs,
-                eps,
-                angles,
-                config_file,
-                rho=1025,
-                g=9.81,
-                dof=6,
-                depth = 100,
-                deep_water=True,
-                qtf_method="Newman",
-                qtf_interp_angles=True,
-                interpolate=True):
+    def __init__(
+        self,
+        wave_amps,
+        freqs,
+        eps,
+        angles,
+        config_file,
+        rho=1025,
+        g=9.81,
+        dof=6,
+        depth=100,
+        deep_water=True,
+        qtf_method="Newman",
+        qtf_interp_angles=True,
+        interpolate=True,
+    ):
         """
         Initialize a WaveLoad object for a sea state.
 
@@ -113,7 +115,7 @@ class WaveLoad:
             1D interpolation over the frequencies when computing
             the first-order force RAO matrices and QTF matrices.
         """
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             vessel_params = json.load(f)
         self._N = wave_amps.shape[0]
         self._amp = wave_amps
@@ -121,23 +123,23 @@ class WaveLoad:
         self._eps = eps
         self._angles = angles
         self._depth = depth
-        self._qtf_angles = np.asarray(vessel_params['headings'])
-        self._qtf_freqs = np.asarray(vessel_params['freqs'])
+        self._qtf_angles = np.asarray(vessel_params["headings"])
+        self._qtf_freqs = np.asarray(vessel_params["freqs"])
         self._params = vessel_params
         self._g = g
-        self._k = freqs**2/g
+        self._k = freqs**2 / g
         if not deep_water:
             self._k = self.wave_number(self._freqs)
         self._rho = rho
         self._W = freqs[:, None] - freqs
         self._P = eps[:, None] - eps
         self._Q = self._full_qtf_6dof(
-            np.asarray(vessel_params['headings']),
-            np.asarray(vessel_params['freqs']),
-            np.asarray(vessel_params['driftfrc']['amp'])[:, :, :, 0],
+            np.asarray(vessel_params["headings"]),
+            np.asarray(vessel_params["freqs"]),
+            np.asarray(vessel_params["driftfrc"]["amp"])[:, :, :, 0],
             method=qtf_method,
             interpolate=interpolate,
-            qtf_interp_angles=qtf_interp_angles
+            qtf_interp_angles=qtf_interp_angles,
         )
         self._set_force_raos(interpolate)
 
@@ -154,13 +156,25 @@ class WaveLoad:
         Selected for the wave frequencies of the sea-state by closest index or
         interpolated over frequencies.
         """
-        amp = np.array(self._params['forceRAO']['amp'])[:, :, :, 0]
-        phase = np.array(self._params['forceRAO']['phase'])[:, :, :, 0]
-        freqs = np.array(self._params['freqs'])
+        amp = np.array(self._params["forceRAO"]["amp"])[:, :, :, 0]
+        phase = np.array(self._params["forceRAO"]["phase"])[:, :, :, 0]
+        freqs = np.array(self._params["freqs"])
 
         if interpolate:
-            f1 = interp1d(freqs, np.abs(amp), axis=1, bounds_error=False, fill_value=(amp[:,0,:], 0))
-            f2 = interp1d(freqs, phase, axis=1, bounds_error=False, fill_value=(0, phase[:,-1,:]))
+            f1 = interp1d(
+                freqs,
+                np.abs(amp),
+                axis=1,
+                bounds_error=False,
+                fill_value=(amp[:, 0, :], 0),
+            )
+            f2 = interp1d(
+                freqs,
+                phase,
+                axis=1,
+                bounds_error=False,
+                fill_value=(0, phase[:, -1, :]),
+            )
             self._forceRAOamp = f1(self._freqs)
             self._forceRAOphase = f2(self._freqs)
         else:
@@ -201,13 +215,15 @@ class WaveLoad:
         x = eta[0]
         y = eta[1]
 
-        rao = rao_amp*np.cos(
-            self._freqs*t -
-            self._k*x*np.cos(self._angles) - self._k*y*np.sin(self._angles) -
-            self._eps - rao_phase
+        rao = rao_amp * np.cos(
+            self._freqs * t
+            - self._k * x * np.cos(self._angles)
+            - self._k * y * np.sin(self._angles)
+            - self._eps
+            - rao_phase
         )
 
-        tau_wf = rao@self._amp
+        tau_wf = rao @ self._amp
 
         return tau_wf
 
@@ -242,16 +258,26 @@ class WaveLoad:
         rel_angle = np.mean(self._relative_incident_angle(heading))
 
         # Get the QTF matrix for the given heading for each DOF.
-        qtf_angles = np.linspace(0, 2*np.pi, 360)
+        qtf_angles = np.linspace(0, 2 * np.pi, 360)
         heading_index = np.argmin(np.abs(qtf_angles - rel_angle))
         Q = self._Q[:, heading_index, :, :]
         # print(Q.shape)
 
-        tau_sv = np.real(self._amp@(Q*np.exp(self._W*(1j*t) + 1j*self._P))@self._amp)
+        tau_sv = np.real(
+            self._amp @ (Q * np.exp(self._W * (1j * t) + 1j * self._P)) @ self._amp
+        )
 
         return tau_sv
 
-    def _full_qtf_6dof(self, qtf_headings, qtf_freqs, qtfs, method=None, interpolate=None, qtf_interp_angles=None):
+    def _full_qtf_6dof(
+        self,
+        qtf_headings,
+        qtf_freqs,
+        qtfs,
+        method=None,
+        interpolate=None,
+        qtf_interp_angles=None,
+    ):
         """
         Generate the full QTF matrix for all DOF, all headings with calculated QTF
         and for all wave frequency components.
@@ -302,48 +328,74 @@ class WaveLoad:
         """
 
         freq_indices = [np.argmin(np.abs(qtf_freqs - freq)) for freq in self._freqs]
-        print("Generate QTF matrices".center(100, '*'))
+        print("Generate QTF matrices".center(100, "*"))
         print(f"Using {'Newman' if method=='Newman' else 'Geometric mean'}\n")
         if interpolate:
             # Add a point to linearly interpolate to zero for high frequencies.
             if self._freqs[0] < qtf_freqs[0]:
                 qtf_freqs = np.insert(qtf_freqs, [0], 0)
                 qtfs = np.insert(qtfs, [0], 0, axis=1)
-            f_qdiag_w = interp1d(qtf_freqs, qtfs, axis=1, bounds_error=False, fill_value=(qtfs[:, 0], qtfs[:, -1]))
+            f_qdiag_w = interp1d(
+                qtf_freqs,
+                qtfs,
+                axis=1,
+                bounds_error=False,
+                fill_value=(qtfs[:, 0], qtfs[:, -1]),
+            )
             Qdiag = f_qdiag_w(self._freqs)
             if qtf_interp_angles:
-                angles_1deg = np.linspace(0, 2*np.pi, 360)
-                f_qdiag_beta = interp1d(qtf_headings, Qdiag, axis=2, bounds_error=False, fill_value=(Qdiag[:, :, 0], Qdiag[:, :, -1]))
+                angles_1deg = np.linspace(0, 2 * np.pi, 360)
+                f_qdiag_beta = interp1d(
+                    qtf_headings,
+                    Qdiag,
+                    axis=2,
+                    bounds_error=False,
+                    fill_value=(Qdiag[:, :, 0], Qdiag[:, :, -1]),
+                )
                 Qdiag = f_qdiag_beta(angles_1deg)
                 # self._qtf_angles = angles_1deg
             Q = np.zeros((6, Qdiag.shape[2], self._N, self._N))
             for dof in range(6):
                 for i in range(Qdiag.shape[2]):
                     if method == "Newman":
-                        Q[dof, i] = .5*(Qdiag[dof, :, i, None] + Qdiag[dof, :, i])
+                        Q[dof, i] = 0.5 * (Qdiag[dof, :, i, None] + Qdiag[dof, :, i])
                     elif method == "geo-mean":
-                        cond = (np.sign(Qdiag[dof, :, i, None]) == np.sign(Qdiag[dof, :, i]))
+                        cond = np.sign(Qdiag[dof, :, i, None]) == np.sign(
+                            Qdiag[dof, :, i]
+                        )
                         # cond = np.ix_(~cond[0], ~cond[1])
-                        Q[dof, i] = cond*np.sign(Qdiag[dof, :, i])*np.abs(Qdiag[dof, :, i, None]*Qdiag[dof, :, i])**.5
+                        Q[dof, i] = (
+                            cond
+                            * np.sign(Qdiag[dof, :, i])
+                            * np.abs(Qdiag[dof, :, i, None] * Qdiag[dof, :, i]) ** 0.5
+                        )
                         # Q[dof, i][cond] = 0
                     else:
-                        raise ValueError(f"{method} is not a valid method. Valid methods = {WaveLoad.get_methods()}")
+                        raise ValueError(
+                            f"{method} is not a valid method. Valid methods = {WaveLoad.get_methods()}"
+                        )
         else:
             Q = np.zeros((6, qtf_headings.shape[0], self._N, self._N))
             for dof in range(6):
                 Qdiag = qtfs[dof, [freq_indices], :].copy()
                 for i in range(len(qtf_headings)):
                     if method == "Newman":
-                        Q[dof, i] = 0.5*(Qdiag[0, :, i, None] + Qdiag[0, :, i])
+                        Q[dof, i] = 0.5 * (Qdiag[0, :, i, None] + Qdiag[0, :, i])
                     elif method == "geo-mean":
-                        cond = (np.sign(Qdiag[0, :, i, None]) == np.sign(Qdiag[0, :, i]))
+                        cond = np.sign(Qdiag[0, :, i, None]) == np.sign(Qdiag[0, :, i])
                         # cond = np.ix_(~cond[0], ~cond[1])
-                        Q[dof, i] = cond*np.sign(Qdiag[0, :, i, None])*np.abs(Qdiag[0, :, i, None]*Qdiag[0, :, i])**.5
+                        Q[dof, i] = (
+                            cond
+                            * np.sign(Qdiag[0, :, i, None])
+                            * np.abs(Qdiag[0, :, i, None] * Qdiag[0, :, i]) ** 0.5
+                        )
                         # Q[dof, i][cond] = 0
                     else:
-                        raise ValueError(f"{method} is not a valid method. Valid methods = {WaveLoad.get_methods()}")
+                        raise ValueError(
+                            f"{method} is not a valid method. Valid methods = {WaveLoad.get_methods()}"
+                        )
 
-        print("QTF matrices complete.".center(100, '*'))
+        print("QTF matrices complete.".center(100, "*"))
         # From config file, qtf[2] is yaw - not heave. Changing this here.
         Q[5] = Q[2].copy()
         Q[2] = np.zeros_like(Q[0])
@@ -368,13 +420,13 @@ class WaveLoad:
         """
         k = np.zeros(self._N)
         for i, w in enumerate(omega):
-            k_old = w**2/self._g
-            k_new = w**2/(self._g * np.tanh(k_old * self._depth))
+            k_old = w**2 / self._g
+            k_new = w**2 / (self._g * np.tanh(k_old * self._depth))
             diff = np.abs(k_old - k_new)
             count = 0
             while diff > tol:
                 k_old = k_new
-                k_new = w**2/(self._g * np.tanh(k_old * self._depth))
+                k_new = w**2 / (self._g * np.tanh(k_old * self._depth))
                 diff = np.abs(k_old - k_new)
                 count += 1
             k[i] = k_new
@@ -400,7 +452,13 @@ class WaveLoad:
         return to_positive_angle(pipi(self._angles - heading))
 
     def _rao_interp(self, rel_angle):
-        index_lb = np.argmin(np.abs(np.rad2deg(self._qtf_angles) - np.floor(np.rad2deg(rel_angle[:, None])/10)*10), axis=1)
+        index_lb = np.argmin(
+            np.abs(
+                np.rad2deg(self._qtf_angles)
+                - np.floor(np.rad2deg(rel_angle[:, None]) / 10) * 10
+            ),
+            axis=1,
+        )
         index_ub = np.where(index_lb < 35, index_lb + 1, 0)
 
         freq_ind = np.arange(0, self._N)
@@ -412,10 +470,10 @@ class WaveLoad:
         rao_phase_ub = self._forceRAOphase[:, freq_ind, index_ub]
 
         theta1, theta2 = self._qtf_angles[index_lb], self._qtf_angles[index_ub]
-        scale = pipi(rel_angle - theta1)/pipi(theta2 - theta1)
+        scale = pipi(rel_angle - theta1) / pipi(theta2 - theta1)
         # Ensure that diff theta1 and theta2 is the smallest signed angle
-        rao_amp = rao_amp_lb + (rao_amp_ub - rao_amp_lb)*scale
-        rao_phase = rao_phase_lb + (rao_phase_ub - rao_phase_lb)*scale
+        rao_amp = rao_amp_lb + (rao_amp_ub - rao_amp_lb) * scale
+        rao_phase = rao_phase_lb + (rao_phase_ub - rao_phase_lb) * scale
         return rao_amp, rao_phase
 
     @classmethod
@@ -423,9 +481,7 @@ class WaveLoad:
         return cls.QTF_METHODS
 
 
-
 class FluidMemory:
-
     def __init__(self, dt, config_file, vessel_name):
         self.dt = dt
         self.config_file = config_file
@@ -433,15 +489,14 @@ class FluidMemory:
         self.vessel_data = self._load_data()
 
         # Extract matrices from system identification
-        self._Ar_lst = self.vessel_data['Ar']   # List of system matrices
-        self._Br_lst = self.vessel_data['Br']   # List of input matrices
-        self._Cr_lst = self.vessel_data['Cr']   # List of output matrices
+        self._Ar_lst = self.vessel_data["Ar"]  # List of system matrices
+        self._Br_lst = self.vessel_data["Br"]  # List of input matrices
+        self._Cr_lst = self.vessel_data["Cr"]  # List of output matrices
 
         self._xr, self._Ar, self._Br, self._Cr, self.indices = self._set_ss_model()
         self.n_systems = len(self._xr)
 
         self.mu = np.zeros(6)
-
 
     @property
     def mu(self):
@@ -458,20 +513,22 @@ class FluidMemory:
         print("Load Vessel data")
         # Load vessel data from configuration file.
         try:
-            with open(self.config_file, 'r') as cf:
+            with open(self.config_file, "r") as cf:
                 vessel_data = json.load(cf)
         except FileNotFoundError:
             print(f"Could not find the file: {self.config_file}.")
 
-            new_path = os.path.abspath(os.path.join(
-                os.path.dirname(__file__),
-                os.pardir,
-                'vessel_data',
-                self.vessel_name,
-                self.config_file
-            ))
+            new_path = os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    os.pardir,
+                    "vessel_data",
+                    self.vessel_name,
+                    self.config_file,
+                )
+            )
             print(f"Trying file at: {new_path}")
-            with open(new_path, 'r') as cf:
+            with open(new_path, "r") as cf:
                 vessel_data = json.load(cf)
 
         return vessel_data
@@ -481,22 +538,25 @@ class FluidMemory:
         xr = [np.zeros(dim[0]) for dim in dimensions if len(dim) > 1]
         indices = [i for i, dim in enumerate(dimensions) if len(dim) > 1]
         Ar = [np.asarray(self._Ar_lst[ind]) for ind in indices]
-        Br = [np.asarray(self._Br_lst[ind]).reshape(-1,) for ind in indices]
+        Br = [
+            np.asarray(self._Br_lst[ind]).reshape(
+                -1,
+            )
+            for ind in indices
+        ]
         Cr = [np.asarray(self._Cr_lst[ind]) for ind in indices]
         return xr, Ar, Br, Cr, indices
-
 
     def integrate(self, nu):
         yr = np.zeros(6)
         for i, indices in enumerate(self.indices):
-            dof = indices//6
-            xr_dot = self._Ar[i]@self._xr[i] + self._Br[i]*nu[indices%6]
+            dof = indices // 6
+            xr_dot = self._Ar[i] @ self._xr[i] + self._Br[i] * nu[indices % 6]
             self._xr[i] = self._xr[i] + self.dt * xr_dot
-            yr[dof] += self._Cr[i]@self._xr[i]
+            yr[dof] += self._Cr[i] @ self._xr[i]
         self.mu = yr
 
     def reset(self):
         for i in range(len(self.indices)):
             self._xr[i] = np.zeros_like(self._xr[i])
         self.mu = np.zeros(6)
-

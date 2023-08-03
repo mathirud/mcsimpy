@@ -3,11 +3,10 @@ import mcsimpy.vessel_data.CSAD.thruster_data as data
 
 
 class ThrusterDynamics:
-
     def __init__(self):
-        #self._u = u
-        #self._alpha = alpha
-        #self._dt = dt
+        # self._u = u
+        # self._alpha = alpha
+        # self._dt = dt
 
         self._K = np.diag(data.K)
         self._lx = data.lx
@@ -15,7 +14,6 @@ class ThrusterDynamics:
         self._n_thrusters = len(data.lx)
 
     def saturate(self, signal, min, max):
-
         """
         Saturates a given signal with both an upper and lower bound.
 
@@ -33,7 +31,6 @@ class ThrusterDynamics:
         return np.clip(signal, min, max)
 
     def limit_rate(self, signal_curr, signal_prev, max):
-
         """
         Limits the rate of change of the signal with respect to a max rate.
         Signal is a vector with the same dimension as number of thrusters.
@@ -58,13 +55,12 @@ class ThrusterDynamics:
         """
 
         for i in range(self._n_thrusters):
-            if (np.abs(signal_curr[i]-signal_prev[i])/self._dt > max):
+            if np.abs(signal_curr[i] - signal_prev[i]) / self._dt > max:
                 signal_curr[i] = signal_prev[i] + abs(max * self._dt)
 
         return signal_curr
 
     def propeller_revolution(self, u):
-
         """
         Calculates the propeller revolution number from the control signal.
         To be used if n needs to be saturated/rate limited.
@@ -88,7 +84,6 @@ class ThrusterDynamics:
         return n
 
     def control_input(self, n):
-
         """
         Calculates the the control input from the propeller revolution number.
         Use this if you have been saturating n.
@@ -112,7 +107,6 @@ class ThrusterDynamics:
         return u
 
     def actuator_loads(self, u):
-
         """
         Computes load on each actuator from the control inputs.
 
@@ -131,7 +125,6 @@ class ThrusterDynamics:
         return self._K @ u
 
     def thruster_configuration(self, alpha):
-
         """
         Sets up the thrust configuration matrix.
 
@@ -146,14 +139,15 @@ class ThrusterDynamics:
             Thrust configuration matrix.
         """
 
-        return np.array([
-            np.cos(alpha),
-            np.sin(alpha),
-            self._lx * np.sin(alpha) - self._ly * np.cos(alpha)
-        ])
+        return np.array(
+            [
+                np.cos(alpha),
+                np.sin(alpha),
+                self._lx * np.sin(alpha) - self._ly * np.cos(alpha),
+            ]
+        )
 
     def get_tau(self, u, alpha):
-
         """
         Computes resulting thrust and moments in surge, sway and yaw from the actuators.
 
@@ -171,10 +165,3 @@ class ThrusterDynamics:
         """
 
         return self.thruster_configuration(alpha) @ self.actuator_loads(u)
-
-
-
-
-
-
-

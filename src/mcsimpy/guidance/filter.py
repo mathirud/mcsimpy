@@ -13,7 +13,8 @@
 import numpy as np
 from mcsimpy.utils import Rz
 
-class ThrdOrderRefFilter():
+
+class ThrdOrderRefFilter:
     """Third-order reference filter for guidance.
 
     Attributes
@@ -32,21 +33,24 @@ class ThrdOrderRefFilter():
         self.eta_d_dot = np.zeros(3)
         self.eta_d_ddot = np.zeros(3)
         self._eta_r = np.zeros(3)
-        self._x = np.concatenate([self.eta_d, self.eta_d_dot, self.eta_d_ddot], axis=None)
+        self._x = np.concatenate(
+            [self.eta_d, self.eta_d_dot, self.eta_d_ddot], axis=None
+        )
         self._delta = np.eye(3)
         self._w = np.diag(omega)
         O3x3 = np.zeros((3, 3))
-        self.Ad = np.block([
-            [O3x3, np.eye(3), O3x3],
-            [O3x3, O3x3, np.eye(3)],
-            [-self._w**3, -(2*self._delta + np.eye(3))@self._w**2, - (2*self._delta + np.eye(3))@self._w]
-        ])
-        self.Bd = np.block([
-            [O3x3],
-            [O3x3],
-            [self._w**3]
-        ])
-
+        self.Ad = np.block(
+            [
+                [O3x3, np.eye(3), O3x3],
+                [O3x3, O3x3, np.eye(3)],
+                [
+                    -self._w**3,
+                    -(2 * self._delta + np.eye(3)) @ self._w**2,
+                    -(2 * self._delta + np.eye(3)) @ self._w,
+                ],
+            ]
+        )
+        self.Bd = np.block([[O3x3], [O3x3], [self._w**3]])
 
     def get_eta_d(self):
         """Get desired pose in NED-frame."""
@@ -63,7 +67,7 @@ class ThrdOrderRefFilter():
     def get_nu_d(self):
         """Get desired velocity in body-frame."""
         psi = self.eta_d[-1]
-        return Rz(psi).T@self.eta_d_dot
+        return Rz(psi).T @ self.eta_d_dot
 
     def set_eta_r(self, eta_r):
         """Set the reference pose.
@@ -77,8 +81,8 @@ class ThrdOrderRefFilter():
 
     def update(self):
         """Update the desired position."""
-        x_dot = self.Ad@self._x + self.Bd@self._eta_r
-        self._x = self._x + self._dt*x_dot
+        x_dot = self.Ad @ self._x + self.Bd @ self._eta_r
+        self._x = self._x + self._dt * x_dot
         self.eta_d = self._x[:3]
         self.eta_d_dot = self._x[3:6]
         self.eta_d_ddot = self._x[6:]

@@ -20,12 +20,7 @@ import json
 import os
 
 GUNNERUS_DATA = os.path.abspath(
-    os.path.join(
-        os.path.dirname(__file__),
-        os.pardir,
-        'vessel_data',
-        'gunnerus'
-    )
+    os.path.join(os.path.dirname(__file__), os.pardir, "vessel_data", "gunnerus")
 )
 
 
@@ -37,53 +32,72 @@ class GunnerusManeuvering3DoF(Vessel):
     ----------
     Fossen 20--. Handbook of marine craft hydrodynamics and motion control
     """
+
     DOF = 3
 
-    def __init__(self, dt, *args, method="Euler", config_file="parV_RVG3DOF.pkl", **kwargs):
+    def __init__(
+        self, dt, *args, method="Euler", config_file="parV_RVG3DOF.pkl", **kwargs
+    ):
         self._config = os.path.join(GUNNERUS_DATA, config_file)
-        super().__init__(dt, method=method, config_file=config_file, dof=GunnerusManeuvering3DoF.DOF)
-        with open(self._config, 'rb') as f:
+        super().__init__(
+            dt, method=method, config_file=config_file, dof=GunnerusManeuvering3DoF.DOF
+        )
+        with open(self._config, "rb") as f:
             self.data = pickle.load(f)
         self._dt = dt
         self._dof = 3
-        self._Mrb = self.data['Mrb']
-        self._Ma = self.data['Ma']
+        self._Mrb = self.data["Mrb"]
+        self._Ma = self.data["Ma"]
         self._Minv = np.linalg.inv(self._Mrb + self._Ma)
         self._D = np.zeros((3, 3))
-        self._Dl = self.data['Dl']
-        self._Du = self.data['Du']
-        self._Dv = self.data['Dv']
-        self._Dr = self.data['Dr']
-        self._ref_vel = self.data['reference_velocity']
+        self._Dl = self.data["Dl"]
+        self._Du = self.data["Du"]
+        self._Dv = self.data["Dv"]
+        self._Dr = self.data["Dr"]
+        self._ref_vel = self.data["reference_velocity"]
         self._eta = np.zeros(3)
         self._nu = np.zeros(3)
         self._x = np.zeros(6)
 
     def x_dot(self, x, U_c, beta_c, tau):
-        eta = x[:self._dof]
-        nu = x[self._dof:]
-        nu_c_n = U_c * np.array([np.cos(beta_c), np.sin(beta_c), 0])    # Current in NED-frame
-        nu_c = Rz(eta[2]).T@nu_c_n                                # Current in body-frame
+        eta = x[: self._dof]
+        nu = x[self._dof :]
+        nu_c_n = U_c * np.array(
+            [np.cos(beta_c), np.sin(beta_c), 0]
+        )  # Current in NED-frame
+        nu_c = Rz(eta[2]).T @ nu_c_n  # Current in body-frame
         S = Smat([0, 0, nu[2]])
-        dnu_c = (S@Rz(eta[2])).T@nu_c_n
+        dnu_c = (S @ Rz(eta[2])).T @ nu_c_n
         nu_r = nu - nu_c
 
-        self._D = self._Dl + self._Du*np.abs(nu_r[0]) + self._Dv*np.abs(nu_r[1]) + self._Dr*np.abs(nu[2])
+        self._D = (
+            self._Dl
+            + self._Du * np.abs(nu_r[0])
+            + self._Dv * np.abs(nu_r[1])
+            + self._Dr * np.abs(nu[2])
+        )
         self._Ca = self.Cor3(nu_r, self._Ma)
         self._Crb = self.Cor3(nu, self._Mrb)
 
-        eta_dot = Rz(eta[2])@self._nu
-        nu_dot = self._Minv@(tau - self._D@nu_r - self._Crb@nu - self._Ca@nu_r + self._Ma@dnu_c)
+        eta_dot = Rz(eta[2]) @ self._nu
+        nu_dot = self._Minv @ (
+            tau - self._D @ nu_r - self._Crb @ nu - self._Ca @ nu_r + self._Ma @ dnu_c
+        )
         return np.concatenate([eta_dot, nu_dot])
-        #return eta_dot, nu_dot
-
+        # return eta_dot, nu_dot
 
     def Cor3(self, nu, M):
-        return np.array([
-            [0, 0, -M[1, 1]*nu[1] - .5*(M[1, 2] + M[2, 1])*nu[2]],
-            [0, 0, M[0, 0]*nu[0]],
-            [M[1, 1]*nu[1] + .5*(M[1, 2] + M[2, 1])*nu[2], -M[0, 0]*nu[0], 0]
-        ])
+        return np.array(
+            [
+                [0, 0, -M[1, 1] * nu[1] - 0.5 * (M[1, 2] + M[2, 1]) * nu[2]],
+                [0, 0, M[0, 0] * nu[0]],
+                [
+                    M[1, 1] * nu[1] + 0.5 * (M[1, 2] + M[2, 1]) * nu[2],
+                    -M[0, 0] * nu[0],
+                    0,
+                ],
+            ]
+        )
 
 
 class RVG_DP_6DOF(Vessel):
@@ -97,22 +111,22 @@ class RVG_DP_6DOF(Vessel):
     def __init__(self, dt, method="Euler", config_file="vessel_2.json", dof=6):
         config_file = os.path.join(GUNNERUS_DATA, config_file)
         super().__init__(dt, config_file=config_file, method=method, dof=6)
-        with open(config_file,'r') as f:
+        with open(config_file, "r") as f:
             data = json.load(f)
 
         # Mass
-        self._Mrb = np.asarray(data['MRB'])
-        self._Ma = np.asarray(data['A'])[:, :, 30, 0]
+        self._Mrb = np.asarray(data["MRB"])
+        self._Ma = np.asarray(data["A"])[:, :, 30, 0]
         self._M = self._Mrb + self._Ma
         self._Minv = np.linalg.inv(self._M)
 
         # Damping
-        self._Dp = np.asarray(data['B'])[:, :, 30, 0]
-        self._Dv = np.asarray(data['Bv'])
+        self._Dp = np.asarray(data["B"])[:, :, 30, 0]
+        self._Dv = np.asarray(data["Bv"])
         self._D = self._Dp + self._Dv
 
         # Restoring coefficients
-        self._G = np.asarray(data['C'])[:, :, 0, 0]
+        self._G = np.asarray(data["C"])[:, :, 0, 0]
 
     def x_dot(self, x, Uc, betac, tau):
         """Kinematic and kinetic equations.
@@ -133,22 +147,22 @@ class RVG_DP_6DOF(Vessel):
         x_dot : array_like
             The derivative of the state vector.
         """
-        eta = x[:self._dof]
-        nu = x[self._dof:]
+        eta = x[: self._dof]
+        nu = x[self._dof :]
 
-        nu_cn = Uc*np.array([np.cos(betac), np.sin(betac), 0])
+        nu_cn = Uc * np.array([np.cos(betac), np.sin(betac), 0])
         # nu_cn = np.concatenate([nu_cn, np.zeros(4)])
         Jinv = np.linalg.inv(J(eta))
-        nu_c = Rz(eta[-1]).T@nu_cn
+        nu_c = Rz(eta[-1]).T @ nu_cn
         nu_c = np.insert(nu_c, [3, 3, 3], 0)
         nu_r = nu - nu_c
         # Calculate the time derivative of nu_c_b
-        dnu_cb = -Smat([0., 0., nu[-1]])@Rz(eta[-1]).T@nu_cn
+        dnu_cb = -Smat([0.0, 0.0, nu[-1]]) @ Rz(eta[-1]).T @ nu_cn
         dnu_cb = np.insert(dnu_cb, [2, 2, 2], 0)
 
-        eta_dot = J(eta)@nu
+        eta_dot = J(eta) @ nu
 
-        nu_dot = self._Minv@(tau - self._D@nu_r - self._G@eta + self._Ma@dnu_cb)
+        nu_dot = self._Minv @ (tau - self._D @ nu_r - self._G @ eta + self._Ma @ dnu_cb)
         return np.concatenate([eta_dot, nu_dot])
 
     def set_hydrod_parameters(self, freq):
@@ -181,19 +195,21 @@ class RVG_DP_6DOF(Vessel):
         freq = np.asarray(freq)
         print(freq.shape)
         if (freq.shape[0] > 1) and (freq.shape[0] != self._dof):
-            raise ValueError(f"Argument freq: {freq} must either be a float or have shape n = {self._dof}. \
-                             freq.shape = {freq.shape} != {self._dof}.")
-        with open(self._config_file, 'r') as f:
+            raise ValueError(
+                f"Argument freq: {freq} must either be a float or have shape n = {self._dof}. \
+                             freq.shape = {freq.shape} != {self._dof}."
+            )
+        with open(self._config_file, "r") as f:
             param = json.load(f)
 
-        freqs = np.asarray(param['freqs'])
+        freqs = np.asarray(param["freqs"])
         if freq.shape[0] == 1:
             freq_indx = np.argmin(np.abs(freqs - freq))
         else:
             freq_indx = np.argmin(np.abs(freqs - freq[:, None]), axis=1)
         all_dof = np.arange(6)
-        self._Ma = np.asarray(param['A'])[:, all_dof, freq_indx, 0]
-        self._Dp = np.asarray(param['B'])[:, all_dof, freq_indx, 0]
+        self._Ma = np.asarray(param["A"])[:, all_dof, freq_indx, 0]
+        self._Dp = np.asarray(param["B"])[:, all_dof, freq_indx, 0]
         self._M = self._Mrb + self._Ma
         self._Minv = np.linalg.inv(self._M)
         self._D = self._Dv + self._Dp

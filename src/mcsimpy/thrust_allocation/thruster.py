@@ -1,7 +1,7 @@
 import numpy as np
- 
-class Thruster:
 
+
+class Thruster:
     def __init__(self, pos, K):
         self._r = np.array(pos)
         self._K = K
@@ -20,7 +20,7 @@ class Thruster:
         y-position of thruster
         """
         return self._r[1]
-    
+
     @property
     def K(self):
         """
@@ -30,18 +30,16 @@ class Thruster:
 
 
 class TunnelThruster(Thruster):
-
     def __init__(self, pos, max_thrust, angle):
         super().__init__(pos)
 
         self._max_thrust = max_thrust
         self._angle = angle
 
-class AzimuthThruster(Thruster):
 
+class AzimuthThruster(Thruster):
     def __init__(self, pos, max_thrust, rotation):
         super().__init__(pos)
 
         self._max_thrust = max_thrust
         self._rotation = rotation
-

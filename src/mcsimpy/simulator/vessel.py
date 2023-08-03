@@ -19,9 +19,7 @@ from mcsimpy.utils import pipi
 
 
 class Vessel(ABC):
-    """Base class for simulator vessels.
-
-    """
+    """Base class for simulator vessels."""
 
     def __init__(self, dt, method, config_file, *args, dof=6, **kwargs):
         self._config_file = config_file
@@ -32,14 +30,16 @@ class Vessel(ABC):
         self._G = np.zeros_like(self._D)
         self._eta = np.zeros(dof)
         self._nu = np.zeros(dof)
-        self._x = np.zeros(2*dof)
-        self._x_dot = np.zeros(2*dof)
+        self._x = np.zeros(2 * dof)
+        self._x_dot = np.zeros(2 * dof)
         if method == "Euler":
             self.int_method = self.forward_euler
         elif method == "RK4":
             self.int_method = self.RK4
         else:
-            raise ValueError(f"{method} is not a valid integation method. Only 'Euler' and 'RK4' are exepted mehtods.")
+            raise ValueError(
+                f"{method} is not a valid integation method. Only 'Euler' and 'RK4' are exepted mehtods."
+            )
 
     def __call__(self, *args, **kwargs):
         pass
@@ -47,15 +47,19 @@ class Vessel(ABC):
     def set_eta(self, eta):
         """Set the pose of the vessel."""
         if eta.shape != self._eta.shape:
-            raise ValueError(f"{eta.shape} does not correspond to the DOF. DOF = {self._dof}")
+            raise ValueError(
+                f"{eta.shape} does not correspond to the DOF. DOF = {self._dof}"
+            )
         self._eta = eta
-        self._x[:self._dof] = self._eta
+        self._x[: self._dof] = self._eta
 
     def set_nu(self, nu):
         if nu.shape != self._nu.shape:
-            raise ValueError(f"{nu.shape} does not correspond to the DOF. DOF = {self._dof}")
+            raise ValueError(
+                f"{nu.shape} does not correspond to the DOF. DOF = {self._dof}"
+            )
         self._nu = nu
-        self._x[self._dof:2*self._dof] = self._nu
+        self._x[self._dof : 2 * self._dof] = self._nu
 
     def get_eta(self):
         """Get vessel pose eta.
@@ -86,7 +90,7 @@ class Vessel(ABC):
 
     def reset(self):
         """Reset state vector to zeroes."""
-        self._x = np.zeros(2*self._dof)
+        self._x = np.zeros(2 * self._dof)
         self._x_dot = np.zeros_like(self._x)
         self._eta = np.zeros(self._dof)
         self._nu = np.zeros(self._dof)
@@ -126,10 +130,14 @@ class Vessel(ABC):
             Sum of all loads corresponding to vessel DOF.
         """
         x = self.get_x()
-        self._x = self.int_method(x, Uc, beta_c, tau)  # Compute new state vector through integration
-        self._eta = self._x[:self._dof] # Set eta
-        self._eta[self._dof//6+2:] = pipi(self._eta[self._dof//6+2:])   # Keep radians in (-pi, pi)
-        self._nu = self._x[self._dof:]  # Set nu
+        self._x = self.int_method(
+            x, Uc, beta_c, tau
+        )  # Compute new state vector through integration
+        self._eta = self._x[: self._dof]  # Set eta
+        self._eta[self._dof // 6 + 2 :] = pipi(
+            self._eta[self._dof // 6 + 2 :]
+        )  # Keep radians in (-pi, pi)
+        self._nu = self._x[self._dof :]  # Set nu
         self._x = np.concatenate([self._eta, self._nu])
 
     def forward_euler(self, x, Uc, beta_c, tau):
@@ -139,9 +147,8 @@ class Vessel(ABC):
     def RK4(self, x, Uc, beta_c, tau):
         """Runge-Kutta 4 integration method."""
         k1 = self.x_dot(x, Uc, beta_c, tau)
-        k2 = self.x_dot(x + k1*self._dt/2, Uc, beta_c, tau)
-        k3 = self.x_dot(x + k2*self._dt/2, Uc, beta_c, tau)
-        k4 = self.x_dot(x + k3*self._dt, Uc, beta_c, tau)
+        k2 = self.x_dot(x + k1 * self._dt / 2, Uc, beta_c, tau)
+        k3 = self.x_dot(x + k2 * self._dt / 2, Uc, beta_c, tau)
+        k4 = self.x_dot(x + k3 * self._dt, Uc, beta_c, tau)
 
-        return self._x + (k1 + 2*k2 + 2*k3 + k4)*self._dt/6
-
+        return self._x + (k1 + 2 * k2 + 2 * k3 + k4) * self._dt / 6

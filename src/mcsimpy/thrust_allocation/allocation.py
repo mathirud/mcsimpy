@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from abc import ABC, abstractmethod
 from mcsimpy.thrust_allocation.thruster import Thruster
 from itertools import repeat
@@ -9,6 +11,7 @@ class AllocationError(Exception):
     """
     AllocationError class
     """
+
 
 class AllocatorCSAD(ABC):
     """
@@ -36,13 +39,11 @@ class AllocatorCSAD(ABC):
         else:
             raise TypeError("Thruster is not of proper type!")
 
-
     @abstractmethod
     def allocation_problem(self):
         """
         Assemble allocation problem into matrix form
         """
-
 
     @abstractmethod
     def allocate(self, tau_d):
@@ -52,7 +53,6 @@ class AllocatorCSAD(ABC):
 
 
 class pseudo_inverse_allocator(AllocatorCSAD):
-
     @property
     def n_problem(self):
         """
@@ -62,7 +62,6 @@ class pseudo_inverse_allocator(AllocatorCSAD):
         return 2 * self.n_thrusters
 
     def allocation_problem(self):
-
         """
         Assemble extended allocation problem into matrix form.
         """
@@ -81,9 +80,7 @@ class pseudo_inverse_allocator(AllocatorCSAD):
 
         return T_e, K_e
 
-
     def allocate(self, tau_d):
-
         """
         Allocate global thrust vector to available thrusters.
         """
@@ -105,22 +102,25 @@ class pseudo_inverse_allocator(AllocatorCSAD):
         alpha = np.zeros(self.n_thrusters)
 
         for i in range(self.n_thrusters):
-            u[i] = np.sqrt(u_e[i*2]**2 + u_e[i*2+1]**2)
-            alpha[i] = np.arctan2(u_e[i*2+1], u_e[i*2])
+            u[i] = np.sqrt(u_e[i * 2] ** 2 + u_e[i * 2 + 1] ** 2)
+            alpha[i] = np.arctan2(u_e[i * 2 + 1], u_e[i * 2])
 
         return u, alpha
 
 
 class fixed_angle_allocator(AllocatorCSAD):
-
     theta = np.deg2rad(30)
 
-    alpha = np.array([np.pi,
-             np.pi/2 + theta,
-             3 * np.pi/2 - theta,
-             - np.pi,
-             - np.pi/2 + theta,
-             np.pi/2 - theta])
+    alpha = np.array(
+        [
+            np.pi,
+            np.pi / 2 + theta,
+            3 * np.pi / 2 - theta,
+            -np.pi,
+            -np.pi / 2 + theta,
+            np.pi / 2 - theta,
+        ]
+    )
 
     def allocation_problem(self):
         """
@@ -134,10 +134,13 @@ class fixed_angle_allocator(AllocatorCSAD):
 
         K = np.diag(K_lst)
 
-        T = np.array([
-            np.cos(self.alpha),
-            np.sin(self.alpha),
-            lx * np.sin(self.alpha) - ly * np.cos(self.alpha)])
+        T = np.array(
+            [
+                np.cos(self.alpha),
+                np.sin(self.alpha),
+                lx * np.sin(self.alpha) - ly * np.cos(self.alpha),
+            ]
+        )
 
         return T, K
 
