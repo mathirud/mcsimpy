@@ -17,7 +17,7 @@ Welcome to MC Sim Python's documentation!
 .. |Python: v3.9| image:: https://shields.io/badge/Python-v3.9-green.svg
    :target: https://www.python.org/downloads/release/python-390
 
-The ``mcsimpy`` package is developed as a part of the master thesis of Jan-Erik Hygen, Marie Kongshaug, and Harald Mo, at the
+The ``mclsimpy`` package is developed as a part of the master thesis of Jan-Erik Hygen, Marie Kongshaug, and Harald Mo, at the
 `Department of Marine Technology (NTNU, Trondheim) <https://www.ntnu.edu/imt>`_. The package is used for simulation of DP stationkeeping models and
 manuevering models subject to first- and second order wave loads.
 

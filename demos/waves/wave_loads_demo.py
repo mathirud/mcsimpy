@@ -3,8 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from mcsimpy.waves.wave_loads import WaveLoad
-from mcsimpy.simulator.csad import CSAD_DP_6DOF
+from mclsimpy.waves.wave_loads import WaveLoad
+from mclsimpy.simulator.csad import CSAD_DP_6DOF
 
 width = 426.8       # Latex document width in pts
 inch_pr_pt = 1/72.27        # Ratio between pts and inches
@@ -21,7 +21,6 @@ params = {#'backend': 'PS',
           'xtick.labelsize': 8,
           'ytick.labelsize': 8,
           'axes.grid': True,
-          'text.usetex': True,
           'figure.figsize': fig_size}
 
 plt.rcParams.update(params)

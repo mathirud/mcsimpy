@@ -1,7 +1,7 @@
 # Utility functions
 
 # ----------------------------------------------------------------------------
-# This code is part of the mcsimpy toolbox and repository.
+# This code is part of the mclsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-10-12
 # Revised: 2023-02-09 Harald Mo    Add from/to 6 and 3DOF functions
@@ -77,7 +77,7 @@ def polar_to_complex(amp, theta):
     Examples
     --------
 
-    >>> from mcsimpy.utils import polar_to_complex
+    >>> from mclsimpy.utils import polar_to_complex
     >>> amp, theta = 1.0, 0.0
     >>> polar_to_complex(amp, theta)
     (1 + 0j)
@@ -108,7 +108,7 @@ def pipi(theta):
     Examples
     --------
 
-    >>> from mcsimpy.utils import pipi
+    >>> from mclsimpy.utils import pipi
     >>> import numpy as np
     >>> angle = 2*np.pi
     >>> pipi(angle)
@@ -143,13 +143,13 @@ def to_positive_angle(theta):
 
     See Also
     --------
-    mcsimpy.utils.pipi :
+    mclsimpy.utils.pipi :
         Map angle to [-pi, pi).
 
     Examples
     --------
 
-    >>> from mcsimpy.utils import to_positive_angle
+    >>> from mclsimpy.utils import to_positive_angle
     >>> import numpy as np
     >>> angle = -np.pi
     >>> to_positive_angle(angle)
@@ -163,7 +163,7 @@ def to_positive_angle(theta):
 
     Correct use for angle > 2pi
 
-    >>> from mcsimpy.utils import pipi
+    >>> from mclsimpy.utils import pipi
     >>> angle = 2.5*np.pi
     >>> to_positive_angle(pipi(angle))
     array(1.57079633)
@@ -276,7 +276,7 @@ def Tzyx(eta):
 
     See Also
     --------
-    mcsimpy.utils.J
+    mclsimpy.utils.J
 
     """
     phi = eta[3]
@@ -406,7 +406,7 @@ def timeit(func):
 
     Examples
     --------
-    >>> from mcsimpy.utils import timeit
+    >>> from mclsimpy.utils import timeit
     >>> @timeit
     ... def loop(n):
     ...     for i in range(n):
@@ -521,7 +521,7 @@ def read_tf(file_path, tf_type="motion"):
 
     The RAOs are converted from the global coordinate system in VERES, which
     is defined as: x-axis positive to stern, y-axis postive to stbd, and
-    z-axis positive up, to the body frame used on `mcsimpy`.
+    z-axis positive up, to the body frame used on `mclsimpy`.
 
     Parameters
     ----------
@@ -553,8 +553,8 @@ def read_tf(file_path, tf_type="motion"):
 
     Note
     ----
-    The wave direction convention of VERES is different from `mcsimpy`.
-    VERES use 0 deg as head sea, and 180 deg as following sea. While `mcsimpy` use
+    The wave direction convention of VERES is different from `mclsimpy`.
+    VERES use 0 deg as head sea, and 180 deg as following sea. While `mclsimpy` use
     head sea = 180 deg, and following sea = 0 deg.
     """
 
@@ -621,7 +621,7 @@ def read_tf(file_path, tf_type="motion"):
     T = np.array([-1, 1, -1, -1, 1, -1])
 
     # Flip headings such that they correspond with
-    # relative wave heading convention of mcsimpy
+    # relative wave heading convention of mclsimpy
     # Note, we need to do this for heading 0 -> heading 180 deg.
     rao_complex_n = np.flip(rao_complex, axis=2)
     rao_amp_n = np.flip(rao_amp, axis=2)
@@ -713,7 +713,7 @@ def read_hydrod(filepath):
 
     f.close()
 
-    # Transforming coefficients from CG to CO and from from Veres to mcsimpy axis system.
+    # Transforming coefficients from CG to CO and from from Veres to mclsimpy axis system.
     Mrb_co = H.T @ T @ Mrb @ T @ H
 
     A_co = np.zeros_like(A)
@@ -778,13 +778,13 @@ def read_wave_drift(filepath):
     f.close()
 
     # Transform from VERES frame (x to stern, z up, y stbd) to
-    # mcsimpy frame (x forward, z down, y stbd)
+    # mclsimpy frame (x forward, z down, y stbd)
     # Both are right hand coordinate systems (only pi rotated about y.)
 
     T = J([0.0, 0.0, 0.0, 0.0, np.pi, 0.0]) @ np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
     T = np.array([-1, 1, -1, -1, 1, -1])
 
-    # Flip the order of headings to correspond to mcsimpy
+    # Flip the order of headings to correspond to mclsimpy
     # heading convention. (Head sea : beta = 180 deg.)
     # VERES convention is (Head sea : beta = 0 deg.)
 

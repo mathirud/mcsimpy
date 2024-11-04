@@ -1,5 +1,5 @@
 import numpy as np
-import mcsimpy.vessel_data.CSAD.thruster_data as data
+import mclsimpy.vessel_data.CSAD.thruster_data as data
 
 
 class ThrusterDynamics:

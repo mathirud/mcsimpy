@@ -7,11 +7,11 @@ plt.rcParams.update({
     'axes.grid': True
 })
 
-from mcsimpy.simulator.csad import CSAD_DP_6DOF
-from mcsimpy.waves.wave_loads import WaveLoad
+from mclsimpy.simulator.csad import CSAD_DP_6DOF
+from mclsimpy.waves.wave_loads import WaveLoad
 
 import time
-from mcsimpy.utils import timeit
+from mclsimpy.utils import timeit
 
 
 def time_func(function, *args, **kwargs):

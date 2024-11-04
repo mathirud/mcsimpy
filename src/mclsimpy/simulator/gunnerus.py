@@ -1,7 +1,7 @@
 # gunnerus.py
 
 # ----------------------------------------------------------------------------
-# This code is part of the mcsimpy toolbox and repository.
+# This code is part of the mclsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-11-02
 # Revised: 2023-02-13 Jan-Erik Hygen    Add 6DOF DP model for RVG
@@ -10,8 +10,8 @@
 # Licensed under GPL-3.0-or-later
 # ---------------------------------------------------------------------------
 
-from mcsimpy.simulator.vessel import Vessel
-from mcsimpy.utils import J, Rz, Smat, pipi
+from mclsimpy.simulator.vessel import Vessel
+from mclsimpy.utils import J, Rz, Smat, pipi
 
 import numpy as np
 import pickle

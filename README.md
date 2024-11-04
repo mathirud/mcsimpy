@@ -1,4 +1,4 @@
-# mcsimpy
+# mclsimpy
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Python: v3.8](https://shields.io/badge/python-v3.8-green.svg)](https://www.python.org/downloads/release/python-380/) [![Python: v3.9](https://shields.io/badge/python-v3.9-green.svg)](https://www.python.org/downloads/release/python-390)
 
@@ -8,12 +8,12 @@ The python package is not complete and there is no guarantee for the validity of
 
 The complete documentation can be found at: https://wave-model.readthedocs.io/en/latest/index.html
 
-## How to use mcsimpy
+## How to use mclsimpy
 
 ### PyPi
-The `mcsimpy` package can be installed from PyPi using `pip`:
+The `mclsimpy` package can be installed from PyPi using `pip`:
 
-`pip install mcsimpy`
+`pip install mclsimpy`
 
 ### From GitHub:
 Install from GitHub in the following:
@@ -22,10 +22,10 @@ Install from GitHub in the following:
 - Activate virtual environment `name-of-venv\scripts\activate`
 - Update pip and setuptools: `py -m pip install --upgrade pip setuptools`
 - Install the python package locally: `pip install .` (alternatively you can install as an editable `pip install -e .`)
-- Verify that the python package `mcsimpy` has been installed properly by running a demo script, or simply in the command promt:
+- Verify that the python package `mclsimpy` has been installed properly by running a demo script, or simply in the command promt:
 ```
 (venv) C:\path\to\dir> python
->>> import mcsimpy
+>>> import mclsimpy
 >>>
 ```
 

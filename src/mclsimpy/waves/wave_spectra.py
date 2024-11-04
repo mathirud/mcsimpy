@@ -1,7 +1,7 @@
 # Wave spectra
 
 # ----------------------------------------------------------------------------
-# This code is part of the mcsimpy toolbox and repository.
+# This code is part of the mclsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-10-11
 # Revised: 2022-10-19 Jan-Erik Hygen    Add 2d spectrum functionality.

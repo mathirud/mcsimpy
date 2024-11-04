@@ -1,7 +1,7 @@
 # csad.py
 
 # ----------------------------------------------------------------------------
-# This code is part of the mcsimpy toolbox and repository.
+# This code is part of the mclsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-11-04
 # Revised:
@@ -14,8 +14,8 @@ import numpy as np
 import os
 import json
 
-from mcsimpy.simulator.vessel import Vessel
-from mcsimpy.utils import Smat, Rz, J
+from mclsimpy.simulator.vessel import Vessel
+from mclsimpy.utils import Smat, Rz, J
 
 """
 Vessel models for C/S Arctic Drillship.

@@ -13,7 +13,7 @@ sys.path.insert(0, cwd)
 print(cwd)
 print(sys.path)
 
-from mcsimpy.waves.wave_spectra import DirectionalSpectrum, JONSWAP
+from mclsimpy.waves.wave_spectra import DirectionalSpectrum, JONSWAP
 
 # Set plot parameters
 width = 426.8       # Latex document width in pts
@@ -30,7 +30,6 @@ params = {'backend': 'PS',
           'legend.fontsize': 10,
           'xtick.labelsize': 8,
           'ytick.labelsize': 8,
-          'text.usetex': True,
           'figure.figsize': fig_size}
 
 plt.rcParams.update(params)

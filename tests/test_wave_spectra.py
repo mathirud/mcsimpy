@@ -9,8 +9,8 @@ import os
 cwd = os.getcwd()
 sys.path.insert(0, cwd)
 
-from mcsimpy.waves.wave_spectra import ModifiedPiersonMoskowitz, JONSWAP
-from mcsimpy.waves.wave_spreading import MultiDirectional, MultiDirectionalAlt
+from mclsimpy.waves.wave_spectra import ModifiedPiersonMoskowitz, JONSWAP
+from mclsimpy.waves.wave_spreading import MultiDirectional, MultiDirectionalAlt
 
 
 class TestSpectra:

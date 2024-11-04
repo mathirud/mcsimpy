@@ -10,7 +10,7 @@ import sys
 cwd = os.getcwd()
 sys.path.insert(0, cwd)
 
-from mcsimpy.waves.wave_spectra import JONSWAP
+from mclsimpy.waves.wave_spectra import JONSWAP
 
 # Set plot parameters
 plt.rcParams.update({
