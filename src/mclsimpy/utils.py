@@ -637,6 +637,40 @@ def read_tf(file_path, tf_type="motion"):
 
 
 def read_hydrod(filepath):
+    """Read hydrodynamic coefficients from Veres output file.
+
+    The function reads the hydrodynamic coefficients from a Veres output file.
+    The coefficients are transformed from the CG to CO and from the Veres
+    axis system to the mclsimpy axis system.
+
+    Parameters
+    ----------
+    filepath : string
+        Path to the Veres output file.
+
+    Returns
+    -------
+    Mrb_co : array_like
+        Mass matrix in CO.
+    A_co : array_like
+        Added mass matrix in CO.
+    B_co : array_like
+        Damping matrix in CO.
+    C_co : array_like
+        Restoring matrix in CO.
+    Bv44_linear : array_like
+        Linearized damping matrix.
+    Bv44_nonlin : array_like
+        Non-linear damping matrix.
+    Bv44_linearized : array_like
+        Linearized damping matrix.
+    nabla : float
+        Added mass ratio.
+    rhow : float
+        Water density.
+    lpp : float
+        Length between perpendicular
+    """
     f = open(filepath, "r")
     header = []
     run_info = []
@@ -741,6 +775,25 @@ def read_hydrod(filepath):
 
 
 def read_wave_drift(filepath):
+    """Read wave drift data from Veres output file.
+
+    The function reads the wave drift data from a Veres output file. The data
+    is transformed from the Veres axis system to the mclsimpy axis system. The
+    wave drift data is transformed to the mclsimpy axis system by applying a
+    transformation matrix.
+
+    Parameters
+    ----------
+    filepath : string
+        Path to the Veres output file.
+
+    Returns
+    -------
+    drift_frc_n : array_like
+        Array of wave drift forces with dimension (6, nofreq, nohead,
+        novel). The array is transformed to the mclsimpy axis system.
+    """
+
     f = open(filepath, "r")
 
     header = []
@@ -1313,6 +1366,34 @@ def joint_identification(w, A, B, order, plot_estimate=False, method=0):
 
 
 def system_identification(w, A, B, max_order=10, method=0, plot_estimate=False):
+    """Identify the system matrices of a linear time-invariant system.
+
+    Parameters
+    ----------
+    w : array_like
+        The frequencies (in radians/sample) corresponding to the frequency response values.
+    A : array_like
+        The frequency response values of the added mass.
+    B : array_like
+        The frequency response values of the radiation forces.
+    max_order : int, optional
+        The maximum order of the numerator and denominator polynomials. Default is 10.
+    method : int, optional
+        The method used for the identification. Default is 0.
+    plot_estimate : bool, optional
+        If True, plot the estimated transfer function. Default is False.
+
+    Returns
+    -------
+    MA : ndarray
+        The estimated infinity added mass coefficients.
+    Ar : array_like
+        The system matrix of the radiation forces.
+    Br : array_like
+        The input matrix of the radiation forces.
+    Cr : array_like
+        The output matrix of the radiation forces.
+    """
     order = 2
     treshold = 0.99
     dofs = np.array(
