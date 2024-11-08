@@ -1,5 +1,6 @@
-numpy
+numpy<2
 pandas
 scipy
 matplotlib
 pytest
+apread

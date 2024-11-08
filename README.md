@@ -13,6 +13,8 @@ The complete documentation can be found at: https://wave-model.readthedocs.io/en
 ### Using `pip`
 
 ```bash
+# Update your pip
+
 pip install git+https://github.com/incebellipipo/mclsimpy.git@master
 ```
 
