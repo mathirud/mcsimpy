@@ -131,7 +131,7 @@ dmypy.json
 .pyre/
 
 
-# FFMPEG 
+# FFMPEG
 ffmpeg.exe
 
 # Ignore mp4 videos.
@@ -154,3 +154,6 @@ data_processing/
 /ros_ws/build/
 # Ignore get-pip.py
 get-pip.py
+
+# ignore version
+*/**/__version__.py
