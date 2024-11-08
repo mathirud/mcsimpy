@@ -10,25 +10,12 @@ The complete documentation can be found at: https://wave-model.readthedocs.io/en
 
 ## How to use mclsimpy
 
-### PyPi
-The `mclsimpy` package can be installed from PyPi using `pip`:
+### Using `pip`
 
-`pip install mclsimpy`
-
-### From GitHub:
-Install from GitHub in the following:
-- Clone the GitHub repository to your local computer.
-- Create a virtual environment `py -m venv name-of-venv`
-- Activate virtual environment `name-of-venv\scripts\activate`
-- Update pip and setuptools: `py -m pip install --upgrade pip setuptools`
-- Install the python package locally: `pip install .` (alternatively you can install as an editable `pip install -e .`)
-- Verify that the python package `mclsimpy` has been installed properly by running a demo script, or simply in the command promt:
-```
-(venv) C:\path\to\dir> python
->>> import mclsimpy
->>>
+```bash
+pip install git+https://github.com/incebellipipo/mclsimpy.git@master
 ```
 
-## Demos
+### Demos
 
 Demonstration of how the individual components of the python package can be used is given in `demos`. Some demos of combination of the different components are also given here.

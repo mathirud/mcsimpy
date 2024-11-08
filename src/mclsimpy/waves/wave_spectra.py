@@ -11,6 +11,7 @@
 # Licensed under GPL-3.0-or-later
 # ---------------------------------------------------------------------------
 
+import scipy as sp
 import numpy as np
 from abc import ABC, abstractclassmethod
 
@@ -232,9 +233,9 @@ class DirectionalSpectrum:
         state = np.abs(d_theta) < np.pi / 2
         spreading = (
             2 ** (2 * s - 1)
-            * np.math.factorial(s)
-            * np.math.factorial(s - 1)
-            / (np.pi * np.math.factorial(2 * s - 1))
+            * sp.math.factorial(s)
+            * sp.math.factorial(s - 1)
+            / (np.pi * sp.math.factorial(2 * s - 1))
             * np.cos(d_theta) ** (2 * s)
         )
         spreading[~state] = 0
