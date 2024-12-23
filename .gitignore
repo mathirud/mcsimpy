@@ -144,8 +144,8 @@ ffmpeg.exe
 # Ignore simulation result files under notebook
 .vscode
 
-notebooks/
-notebooks/*
+./notebooks/
+./notebooks/*
 
 data_processing/
 
