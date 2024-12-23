@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath("../src/"))
 print(sys.path)
 
 project = 'mclsimpy'
-copyright = '2023, J. Hygen, M. Konsghaug, H. Mo'
+copyright = '2024, J. Hygen, M. Konsghaug, H. Mo'
 author = 'Jan-Erik Hygen, Marie Konshaug, Harald Mo'
 
 # -- General configuration ---------------------------------------------------
