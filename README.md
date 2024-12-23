@@ -15,9 +15,19 @@ The complete documentation can be found at: https://wave-model.readthedocs.io/en
 ```bash
 # Update your pip
 
-pip install git+https://github.com/incebellipipo/mclsimpy.git@master
+pip install git+https://github.com/NTNU-MCS/mclsimpy.git@master
 ```
 
 ### Demos
 
 Demonstration of how the individual components of the python package can be used is given in `demos`. Some demos of combination of the different components are also given here.
+
+### Disclaimer
+
+This is a cleaned-up version of a previous master's work, called MCSimPython, into a new package called mclsimpy to streamline our development efforts on digital twin and developing high fidelity simulation models for Cybership Vessels. The package can be found here
+https://github.com/NTNU-MCS/mclsimpy
+
+Further notes:
+- Improvements and bug fixes will be published to https://github.com/NTNU-MCS/mclsimpy
+- The original work can be found here: https://github.com/janerikhy/Wave-Model
+- This package originated from the Project MCSim_Python https://github.com/NTNU-MCS/MCSim_python
