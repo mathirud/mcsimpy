@@ -42,10 +42,6 @@ The package have some of the same features as the `MSS Toolbox <https://se.mathw
 
    getting_started
    modules/simulator
-   modules/control
-   modules/guidance
-   modules/thrust_allocation
-   modules/observer
    modules/waves
    modules/utils
 
