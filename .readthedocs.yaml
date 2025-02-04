@@ -1,9 +1,9 @@
 version: 2
 
 build:
-  os: "ubuntu-20.04"
+  os: "ubuntu-22.04"
   tools:
-    python: "3.8"
+    python: "3.12"
 
 python:
   # Install our python package before building the docs
@@ -12,4 +12,10 @@ python:
       path: .
 
 sphinx:
+  configuration: docs/conf.py
   fail_on_warning: true
+
+versions:
+  only:
+    - master
+    - /^v\d+\.\d+/
