@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import os, sys
+sys.path.insert(0, "../../src")
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import welch, csd
@@ -138,8 +141,8 @@ for i in range(len(sim_results)):
     psd_exp = exp_response_heave[i][1]
     plt.plot(f[f < f_max], psd[f < f_max], label="Sim.")
     plt.plot(f_exp[f_exp < f_max], psd_exp[f_exp < f_max], label="Exp.")
-    plt.xlabel("$f \; [Hz]$")
-    plt.ylabel("$[m^2 s]$")
+    plt.xlabel(r"$f \; [Hz]$")
+    plt.ylabel(r"$[m^2 s]$")
     plt.legend(loc="upper right", edgecolor="k", title=f"Sea state {sea_states[i]}")
 
 plt.tight_layout()
@@ -160,8 +163,8 @@ for i in range(len(sim_results)):
     psd_exp = exp_response_pitch[i][1]
     plt.plot(f[f < f_max], psd[f < f_max], label="Sim.")
     plt.plot(f_exp[f_exp < f_max], psd_exp[f_exp < f_max], label="Exp.")
-    plt.xlabel("$f \; [Hz]$")
-    plt.ylabel("$[$rad$^2s]$")
+    plt.xlabel(r"$f \; [Hz]$")
+    plt.ylabel(r"$[$rad$^2s]$")
     plt.legend(loc="upper right", edgecolor="k", title=f"Sea state {sea_states[i]}")
 
 #plt.xlabel("$f \; [Hz]$")

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import os, sys
+
+sys.path.insert(0, "../../src")
+
+
 from mclsimpy.simulator import RVG_DP_6DOF
 from mclsimpy.utils import system_identification as sys_id
 
