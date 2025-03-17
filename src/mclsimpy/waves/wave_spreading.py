@@ -58,8 +58,8 @@ class MultiDirectionalAlt(BaseSpreading):
         f_theta = (
             2 ** (2 * s - 1)
             * scipy.special.factorial(s)
-            * scipy.math.factorial(s - 1)
-            / (np.pi * scipy.math.factorial(2 * s - 1))
+            * scipy.special.factorial(s - 1)
+            / (np.pi * scipy.special.factorial(2 * s - 1))
             * np.cos(d_theta) ** (2 * s)
         )
         f_theta[~in_pipi_half] = 0

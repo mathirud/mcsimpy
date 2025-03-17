@@ -385,9 +385,9 @@ if __name__ == "__main__":
     ax.view_init(30, 40)
     # ax.plot_surface(X, Y, realization_2d, cmap=cm.coolwarm)
     ax.set_zlim([-2 * hs, 2 * hs])
-    ax.set_xlabel("$x \, [m]$")
-    ax.set_ylabel("$y \, [m]$")
-    ax.set_zlabel("$\zeta \, [m]$")
+    ax.set_xlabel(r"$x \, [m]$")
+    ax.set_ylabel(r"$y \, [m]$")
+    ax.set_zlabel(r"$\zeta \, [m]$")
 
     fps = 32
 
