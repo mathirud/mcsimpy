@@ -13,7 +13,7 @@
 
 import scipy as sp
 import numpy as np
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 
 
 class BaseSpectrum(ABC):
@@ -44,7 +44,7 @@ class BaseSpectrum(ABC):
     def moment(self, n, *args, **kwargs):
         """Calculate n-th spectral moment."""
         freq, spec = self.__call__(*args, **kwargs)
-        return np.trapz(freq**n * spec, freq)
+        return np.trapezoid(freq**n * spec, freq)
 
     def realization(self, time, *args, **kwargs):
         """Generate a wave realization from wave spectrum at a fixed position.
@@ -70,7 +70,7 @@ class BaseSpectrum(ABC):
         eps = np.random.uniform(0, 2 * np.pi, size=len(amp))
         return np.sum(amp * np.cos(freq * time[:, None] + eps), axis=1)
 
-    @abstractclassmethod
+    @abstractmethod
     def _spectrum(self, omega, *args, **kwargs):
         raise NotImplementedError
 

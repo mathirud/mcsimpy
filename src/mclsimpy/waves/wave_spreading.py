@@ -1,7 +1,8 @@
 # Spreading functions for unidirectional and multidirectional wave fields
 import numpy as np
-from abc import ABC, abstractclassmethod
-import scipy as sp
+from abc import ABC, abstractmethod
+import scipy
+import scipy.special
 
 class BaseSpreading(ABC):
 
@@ -24,7 +25,7 @@ class BaseSpreading(ABC):
     def __call__(self, *args, degrees=None, **kwargs):
         return self._spreading(*args, **kwargs)
 
-    @abstractclassmethod
+    @abstractmethod
     def _spreading(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -56,9 +57,9 @@ class MultiDirectionalAlt(BaseSpreading):
         in_pipi_half = np.abs(d_theta) < np.pi / 2
         f_theta = (
             2 ** (2 * s - 1)
-            * np.math.factorial(s)
-            * np.math.factorial(s - 1)
-            / (np.pi * np.math.factorial(2 * s - 1))
+            * scipy.special.factorial(s)
+            * scipy.math.factorial(s - 1)
+            / (np.pi * scipy.math.factorial(2 * s - 1))
             * np.cos(d_theta) ** (2 * s)
         )
         f_theta[~in_pipi_half] = 0

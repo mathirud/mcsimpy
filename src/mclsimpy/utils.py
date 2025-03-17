@@ -33,7 +33,7 @@ dof3_array = np.ix_([0, 1, 5])
 
 
 def complex_to_polar(complex_values):
-    """Complex value to polar coordinates.
+    r"""Complex value to polar coordinates.
 
     Parameters
     ----------
@@ -239,7 +239,7 @@ def Rz(psi):
 
 
 def Rzyx(eta):
-    """Full roation matrix.
+    r"""Full roation matrix.
 
     .. math::
         R_{zyx} = R_z(\psi)R_y(\\theta)R_x(\phi)
@@ -262,7 +262,7 @@ def Rzyx(eta):
 
 
 def Tzyx(eta):
-    """Transformation matrix.
+    r"""Transformation matrix.
 
     Parameters
     ----------
@@ -292,7 +292,7 @@ def Tzyx(eta):
 
 
 def J(eta):
-    """6 DOF rotation matrix.
+    r"""6 DOF rotation matrix.
 
     .. math::
         J(\eta) = \left[\\begin{array}{cc}R_{zyx}(\eta) & O_{3\\times 3} \\\ O_{3\\times 3} & T_{zyx}(\eta)\end{array} \\right]
@@ -316,7 +316,7 @@ def J(eta):
 
 
 def Smat(x):
-    """
+    r"""
     Skew-symmetric cross-product operator matrix.
 
     Parameters
@@ -331,7 +331,7 @@ def Smat(x):
 
 
 def three2sixDOF(v):
-    """3 to 6 DOF conversion.
+    r"""3 to 6 DOF conversion.
 
     Converts a vector a matrix from 3DOF
     to 6DOF.
@@ -368,7 +368,7 @@ def three2sixDOF(v):
 
 
 def six2threeDOF(v):
-    """6 to 3 DOF conversion.
+    r"""6 to 3 DOF conversion.
 
     Convert a 6DOF vecor or matrix to 3DOF.
 
@@ -392,7 +392,7 @@ def six2threeDOF(v):
 
 
 def timeit(func):
-    """
+    r"""
     Decorator for measuring execution time of function.
 
     Print the execution time of a function. (Mainly for
@@ -433,7 +433,7 @@ def timeit(func):
 
 
 def rigid_body_transform(r, eta, in_ned=True):
-    """Calculate the relative motion of a point r different from the COG.
+    r"""Calculate the relative motion of a point r different from the COG.
 
     The calculation assumes small angles (s.t. cos(theta)=0 and sin(theta)=theta)
     and is computed as:
@@ -466,7 +466,7 @@ def rigid_body_transform(r, eta, in_ned=True):
 
 
 def power_spectral_density(timeseries, fs, freq_hz=False, nperseg=2**11):
-    """Compute the Power Spectral Density (PSD) of a timeseries.
+    r"""Compute the Power Spectral Density (PSD) of a timeseries.
 
     The PSD is calculated using scipy.signals.welch
 
@@ -495,9 +495,9 @@ def power_spectral_density(timeseries, fs, freq_hz=False, nperseg=2**11):
 
 
 # --------- READ DATA UTILITY FUNCTIONS -------------------
-re_science = "\s{1,}-?\d\.?\d*[Ee][+\-]?\d+"
-re_int = "\s{1,}[0-9]{1,}"
-re_float = "\s{1,}[0-9]{1,}\.[0-9]{1,}"
+re_science = r"\s{1,}-?\d\.?\d*[Ee][+\-]?\d+"
+re_int = r"\s{1,}[0-9]{1,}"
+re_float = r"\s{1,}[0-9]{1,}\.[0-9]{1,}"
 
 
 def data2num(line):
@@ -513,7 +513,7 @@ def data2float(line):
 
 
 def read_tf(file_path, tf_type="motion"):
-    """Read VERES transfer function output.
+    r"""Read VERES transfer function output.
 
     The function reads data from veres input files.
     - Motion RAOs are found in '.re1'
@@ -637,7 +637,7 @@ def read_tf(file_path, tf_type="motion"):
 
 
 def read_hydrod(filepath):
-    """Read hydrodynamic coefficients from Veres output file.
+    r"""Read hydrodynamic coefficients from Veres output file.
 
     The function reads the hydrodynamic coefficients from a Veres output file.
     The coefficients are transformed from the CG to CO and from the Veres
@@ -775,7 +775,7 @@ def read_hydrod(filepath):
 
 
 def read_wave_drift(filepath):
-    """Read wave drift data from Veres output file.
+    r"""Read wave drift data from Veres output file.
 
     The function reads the wave drift data from a Veres output file. The data
     is transformed from the Veres axis system to the mclsimpy axis system. The
@@ -852,7 +852,7 @@ def read_wave_drift(filepath):
 def plot_raos(
     raos, freqs, plot_polar=True, rao_type="motion", wave_angle=0, figsize=(16, 8)
 ):
-    """Plot the force or motion RAOs.
+    r"""Plot the force or motion RAOs.
 
     The RAOs should be complex.
 
@@ -892,13 +892,13 @@ def plot_raos(
                 np.angle(raos[i, 0, wave_angle, 0]),
                 np.abs(raos[i, 0, wave_angle, 0]),
                 "ro",
-                label="$\omega_{min}$",
+                label=r"$\omega_{min}$",
             )
             plt.plot(
                 np.angle(raos[i, -1, wave_angle, 0]),
                 np.abs(raos[i, -1, wave_angle, 0]),
                 "go",
-                label="$\omega_{max}$",
+                label=r"$\omega_{max}$",
             )
             if (i < 3) and (rao_type == "motion"):
                 plt.gca().set_rmax(1)
@@ -910,7 +910,7 @@ def plot_raos(
         for i in range(6):
             plt.sca(axs[i // 3, i % 3])
             plt.plot(freqs, np.abs(raos[i, :, wave_angle, 0]))
-            plt.xlabel("$\omega \; [rad/s]$")
+            plt.xlabel(r"$\omega \; [rad/s]$")
             if i < 3:
                 plt.ylabel(r"$\frac{\eta}{\zeta_a} \; [\frac{m}{m}]$")
             else:
@@ -920,8 +920,8 @@ def plot_raos(
         for i in range(6):
             plt.sca(axs[i // 3, i % 3])
             plt.plot(freqs, np.angle(raos[i, :, wave_angle, 0]))
-            plt.xlabel("$\omega \; [rad/s]$")
-            plt.ylabel("$\phi \; [rad]$")
+            plt.xlabel(r"$\omega \; [rad/s]$")
+            plt.ylabel(r"$\phi \; [rad]$")
 
     plt.show()
 
@@ -995,7 +995,7 @@ def _complete_sector_coeffs(vessel_config: dict):
 
 
 def generate_config_file(input_files_paths: list = None, input_file_dir: str = None):
-    """Generate a .json configuration file for a vessel. The function can take
+    r"""Generate a .json configuration file for a vessel. The function can take
     either a list of file locations, or the path to the directory containing the
     result files.
 
@@ -1135,7 +1135,7 @@ def generate_config_file(input_files_paths: list = None, input_file_dir: str = N
 
 
 def invfreqs(h, w, nb, na, weights=None, method=0, maxiter=40):
-    """
+    r"""
     Estimate the numerator and denominator coefficients of a transfer function from
     frequency response data using complex function curve fitting with quasi-linear least squares.
 
@@ -1241,7 +1241,7 @@ def _invfreqs_alt(g, worN, nB, nA, wf=None, nk=0):
 
 
 def _stabilize(a):
-    """Stabilize the denominator polynomial by switching sign of real part for roots with real part > 1.
+    r"""Stabilize the denominator polynomial by switching sign of real part for roots with real part > 1.
 
     Parameters
     ----------
@@ -1264,7 +1264,7 @@ def _stabilize(a):
 
 
 def joint_identification(w, A, B, order, plot_estimate=False, method=0):
-    """Joint identification of infinity added mass and radiation forces.
+    r"""Joint identification of infinity added mass and radiation forces.
 
     Parameters
     ----------
@@ -1366,7 +1366,7 @@ def joint_identification(w, A, B, order, plot_estimate=False, method=0):
 
 
 def system_identification(w, A, B, max_order=10, method=0, plot_estimate=False):
-    """Identify the system matrices of a linear time-invariant system.
+    r"""Identify the system matrices of a linear time-invariant system.
 
     Parameters
     ----------
@@ -1582,7 +1582,7 @@ def system_identification(w, A, B, max_order=10, method=0, plot_estimate=False):
 
 
 def quat2eul(w, x, y, z):
-    """
+    r"""
     Returns the ZYX roll-pitch-yaw angles from a quaternion.
     """
     q = np.array((w, x, y, z))
@@ -1607,7 +1607,7 @@ def quat2eul(w, x, y, z):
 
 
 def quat2eul(w, x, y, z):
-    """
+    r"""
     Returns the ZYX roll-pitch-yaw angles from a quaternion.
     """
     q = np.array((w, x, y, z))
