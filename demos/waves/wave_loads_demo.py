@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# import os, sys
+
+# sys.path.insert(0, "src")
+
 import numpy as np
 import matplotlib.pyplot as plt
 
