@@ -1,10 +1,8 @@
 # mclsimpy
 
-![Python 3.13](https://github.com/incebellipipo/mclsimpy/actions/workflows/run_tests.yml/badge.svg?branch=main&event=push&status=Python%203.13)
-![Python 3.12](https://github.com/my-user/my-repo/actions/workflows/python-package.yaml/badge.svg?branch=main&event=push&status=Python%203.12)
+![Build Status](https://github.com/NTNU-MCS/mclsimpy/actions/workflows/run_tests.yml/badge.svg)
 
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Python: v3.8](https://shields.io/badge/python-v3.8-green.svg)](https://www.python.org/downloads/release/python-380/) [![Python: v3.9](https://shields.io/badge/python-v3.9-green.svg)](https://www.python.org/downloads/release/python-390)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 Vessel simulator used in master project and master thesis of M. Kongshaug, H. Mo, E. Midtun and J. Hygen. The project is developed at Norwegian University of Science and Technology, Institue of Marine Technology.
 
