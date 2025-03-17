@@ -44,7 +44,11 @@ class BaseSpectrum(ABC):
     def moment(self, n, *args, **kwargs):
         """Calculate n-th spectral moment."""
         freq, spec = self.__call__(*args, **kwargs)
-        return np.trapezoid(freq**n * spec, freq)
+        try:
+            integrate_func = np.trapezoid  # New function in latest NumPy versions
+        except AttributeError:
+            integrate_func = np.trapz  # Fallback for older versions
+        return integrate_func(freq**n * spec, freq)
 
     def realization(self, time, *args, **kwargs):
         """Generate a wave realization from wave spectrum at a fixed position.

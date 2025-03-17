@@ -70,8 +70,11 @@ class TestSpectra:
 
         spreading_spectra = MultiDirectional(theta)
         angles, spreading = spreading_spectra()
-
-        integral = np.trapezoid(spreading, angles)
+        try:
+            integrate_func = np.trapezoid  # New function in latest NumPy versions
+        except AttributeError:
+            integrate_func = np.trapz  # Fallback for older versions
+        integral = integrate_func(spreading, angles)
         print(integral)
         assert np.isclose(integral, 1, rtol=1e-2)
 
