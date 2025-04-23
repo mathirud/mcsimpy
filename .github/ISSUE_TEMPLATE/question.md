@@ -1,13 +1,13 @@
 ---
 name: Question
-about: Ask a question about using MCLSimPy
+about: Ask a question about using mcsimpy
 title: '[QUESTION] '
 labels: question
 assignees: ''
 ---
 
 ## Question
-A clear and detailed question about MCLSimPy.
+A clear and detailed question about mcsimpy.
 
 ## Context
 What are you trying to accomplish? Include any relevant code snippets or configurations.

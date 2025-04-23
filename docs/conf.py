@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath("../"))
 sys.path.insert(0, os.path.abspath("../src/"))
 print(sys.path)
 
-project = 'mclsimpy'
+project = 'mcsimpy'
 copyright = '2024, J. Hygen, M. Konsghaug, H. Mo'
 author = 'Jan-Erik Hygen, Marie Konshaug, Harald Mo'
 

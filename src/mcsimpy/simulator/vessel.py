@@ -1,7 +1,7 @@
 # vessel.py
 
 # ----------------------------------------------------------------------------
-# This code is part of the mclsimpy toolbox and repository.
+# This code is part of the mcsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-10-31
 # Revised: 2023-01-23 Author    added RK4 integration
@@ -15,7 +15,7 @@
 import numpy as np
 from abc import ABC, abstractclassmethod
 
-from mclsimpy.utils import pipi
+from mcsimpy.utils import pipi
 
 
 class Vessel(ABC):

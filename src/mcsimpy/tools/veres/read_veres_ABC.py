@@ -1,6 +1,6 @@
 import numpy as np
 
-import mclsimpy.tools.abc_transform as ABCtransform
+import mcsimpy.tools.abc_transform as ABCtransform
 
 # -------------------------------------------------------------------------
 # 1) Transformation from Veres to Fossen axes: Tmtrx

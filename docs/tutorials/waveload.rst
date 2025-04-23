@@ -1,8 +1,8 @@
 Simulations with Wave Loads
 ===========================
 
-One of the main features of the ``mclsimpy`` library is to simulate vessels with wave loads. Using the
-``mclsimpy.waves`` packages, we can generate sea states by from wave spectras, and calculate the loads
+One of the main features of the ``mcsimpy`` library is to simulate vessels with wave loads. Using the
+``mcsimpy.waves`` packages, we can generate sea states by from wave spectras, and calculate the loads
 on the vessel. Here, laods refer to the first- and second-order wave loads.
 
 We will in this tutorial show how to create a sea state, and how to use it to simulate a vessel subject to wave loads.
@@ -14,7 +14,7 @@ A larger number of wave components must be used for longer simulations.
 
 .. code-block:: python
 
-    from mclsimpy.waves import JONSWAP
+    from mcsimpy.waves import JONSWAP
     import numpy as np
 
     hs = 2.5    # Signifcant wave height
@@ -56,8 +56,8 @@ we are using the RV Gunnerus 6 DOF simulation model.
 
 .. code-block:: python
 
-    from mclsimpy.simulator import RVG_DP_6DOF
-    from mclsimpy.waves import WaveLoad
+    from mcsimpy.simulator import RVG_DP_6DOF
+    from mcsimpy.waves import WaveLoad
 
     # Set the simulation parameters
     dt = 0.1    # Simulation time step to be used

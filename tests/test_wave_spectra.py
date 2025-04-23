@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from mclsimpy.waves.wave_spectra import ModifiedPiersonMoskowitz, JONSWAP
-from mclsimpy.waves.wave_spreading import MultiDirectional, MultiDirectionalAlt
+from mcsimpy.waves.wave_spectra import ModifiedPiersonMoskowitz, JONSWAP
+from mcsimpy.waves.wave_spreading import MultiDirectional, MultiDirectionalAlt
 
 
 import numpy as np

@@ -5,8 +5,8 @@ import os, sys
 sys.path.insert(0, "../../src")
 
 
-from mclsimpy.simulator import RVG_DP_6DOF
-from mclsimpy.utils import system_identification as sys_id
+from mcsimpy.simulator import RVG_DP_6DOF
+from mcsimpy.utils import system_identification as sys_id
 
 import os
 import json
@@ -21,7 +21,7 @@ vessel_name = input("Enter vessel name (gunnerus / CSAD): ")
 if vessel_name not in ['gunnerus', 'CSAD']:
     raise ValueError("Vessel name must be either 'gunnerus' or 'CSAD'.")
 basedir = os.getcwd()
-rvg_dir = os.path.join(basedir, 'src', 'mclsimpy', 'vessel_data', vessel_name)
+rvg_dir = os.path.join(basedir, 'src', 'mcsimpy', 'vessel_data', vessel_name)
 
 vessel = RVG_DP_6DOF(0.1, config_file="rvg3_config.json")
 with open(vessel._config_file, 'r') as f:

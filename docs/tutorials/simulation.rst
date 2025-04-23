@@ -1,8 +1,8 @@
 Vessel Simulations
 ==================
 
-This tutorial shows the simplest use of the ``mclsimpy`` package. Here, we will show how you can use
-the built in vessel simulation models found in ``mclsimpy.simulator``.
+This tutorial shows the simplest use of the ``mcsimpy`` package. Here, we will show how you can use
+the built in vessel simulation models found in ``mcsimpy.simulator``.
 
 
 We start by defining the simulation parameter. We will use the maneuvering vessel simulation model of CSAD.
@@ -11,7 +11,7 @@ As this is a model scale vessel, we must use a small time step due to its high e
 .. code-block:: python
 
     import numpy as np
-    from mclsimpy.simulator import CSADMan3DOF
+    from mcsimpy.simulator import CSADMan3DOF
 
     dt = 0.01 # Simulation timestep corresponding to sampling frequency of 100 Hz
     simtime = 120   # 2 minutes simulation

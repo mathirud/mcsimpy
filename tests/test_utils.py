@@ -9,7 +9,7 @@ import os
 cwd = os.getcwd()
 sys.path.insert(0, cwd)
 
-from mclsimpy.utils import Rz, Ry, Rx, Rzyx, J, to_positive_angle, rigid_body_transform
+from mcsimpy.utils import Rz, Ry, Rx, Rzyx, J, to_positive_angle, rigid_body_transform
 
 
 class TestKinematicUtils:

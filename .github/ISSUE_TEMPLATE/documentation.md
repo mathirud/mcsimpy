@@ -1,6 +1,6 @@
 ---
 name: Documentation Issue
-about: Report problems or suggest improvements to MCLSimPy documentation
+about: Report problems or suggest improvements to mcsimpy documentation
 title: '[DOCS] '
 labels: documentation
 assignees: ''

@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help us improve MCLSimPy
+about: Create a report to help us improve mcsimpy
 title: '[BUG] '
 labels: bug
 assignees: ''

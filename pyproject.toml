@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mclsimpy"
+name = "mcsimpy"
 authors = [
   { name="Jan-Erik Hygen", email="janereh@stud.ntnu.no" },
 ]
@@ -20,8 +20,8 @@ classifiers = [
 ]
 license = { file = "LICENSE" }
 keywords = [
-  'mclsim',
-  'mclsimpy',
+  'mcsim',
+  'mcsimpy',
   'DP',
   'dynamic positioning',
   'Marine Cybernetics'
@@ -39,7 +39,7 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools_scm]
-version_file = "src/mclsimpy/__version__.py"
+version_file = "src/mcsimpy/__version__.py"
 version_scheme = 'post-release'
 
 [tool.setuptools.package-data]

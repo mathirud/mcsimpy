@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for MCLSimPy
+about: Suggest an idea for mcsimpy
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''

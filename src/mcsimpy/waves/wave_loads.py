@@ -1,7 +1,7 @@
 # Module for computing wave loads on vessel
 
 # ----------------------------------------------------------------------------
-# This code is part of the mclsimpy toolbox and repository.
+# This code is part of the mcsimpy toolbox and repository.
 # Created By: Jan-Erik Hygen
 # Created Date: 2022-10-26
 # Revised: 2023-01-30 Jan-Erik Hygen    Add multidir wave loads.
@@ -17,7 +17,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
 import json
-from mclsimpy.utils import to_positive_angle, pipi, timeit
+from mcsimpy.utils import to_positive_angle, pipi, timeit
 
 import os
 

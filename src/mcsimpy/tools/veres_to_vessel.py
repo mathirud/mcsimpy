@@ -2,7 +2,7 @@ import os
 import h5py
 import numpy as np
 
-from mclsimpy.tools.veres import read_veres_ABC, read_veres_TF, read_veres_WD
+from mcsimpy.tools.veres import read_veres_ABC, read_veres_TF, read_veres_WD
 
 # -------------------------------------------------------------------------
 # Helper function to recursively store nested Python dicts into HDF5
