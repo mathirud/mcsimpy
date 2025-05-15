@@ -17,6 +17,8 @@ import numpy as np
 import pickle
 import json
 
+from DT.holtrop_mennen_resistance import get_total_resistance
+
 import os
 
 GUNNERUS_DATA = os.path.abspath(
@@ -123,7 +125,7 @@ class RVG_DP_6DOF(Vessel):
         # Damping
         self._Dp = np.asarray(data["B"])[:, :, 30, 0]
         self._Dv = np.asarray(data["Bv"])
-        self._D = self._Dp + self._Dv
+        self._D = self._Dp*0  + self._Dv*0
 
         # Restoring coefficients
         self._G = np.asarray(data["C"])[:, :, 0, 0]
@@ -150,6 +152,8 @@ class RVG_DP_6DOF(Vessel):
         eta = x[: self._dof]
         nu = x[self._dof :]
 
+        R_hull = get_total_resistance(nu)
+
         nu_cn = Uc * np.array([np.cos(betac), np.sin(betac), 0])
         # nu_cn = np.concatenate([nu_cn, np.zeros(4)])
         Jinv = np.linalg.inv(J(eta))
@@ -162,7 +166,7 @@ class RVG_DP_6DOF(Vessel):
 
         eta_dot = J(eta) @ nu
 
-        nu_dot = self._Minv @ (tau - self._D @ nu_r - self._G @ eta + self._Ma @ dnu_cb)
+        nu_dot = self._Minv @ (tau - self._D @ nu_r - self._G @ eta + self._Ma @ dnu_cb - R_hull)
         return np.concatenate([eta_dot, nu_dot])
 
     def set_hydrod_parameters(self, freq):
