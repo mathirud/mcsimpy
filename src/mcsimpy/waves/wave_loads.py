@@ -225,7 +225,7 @@ class WaveLoad:
 
         tau_wf = rao @ self._amp
 
-        return tau_wf
+        return np.zeros(6) #tau_wf
 
     def second_order_loads(self, t, heading):
         """
